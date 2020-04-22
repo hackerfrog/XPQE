@@ -6,22 +6,21 @@ from PyQt5.QtCore import *
 from qtconsole.qt import QtCore
 
 from logger import log
+from modules.Profiler import Profile
 
 
-class Profiler(QTableWidget):
+class ProfileTable(QTableWidget):
     """
     Table of Profile Manager Dialog
     """
     COLUMNS_NAME = [
-        'Profile', 'Engine Type'
+        'Profile', 'Engine Type', 'Host', 'Username'
     ]
 
-    def __init__(self):
-        """
-        class set-up
-        """
+    def __init__(self, profiler):
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
+        self.profiler = profiler
 
         table_font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
         table_font.setPointSize(8)
@@ -39,21 +38,34 @@ QHeaderView::section {
         for itr, column in enumerate(self.COLUMNS_NAME):
             self.horizontalHeaderItem(itr).setToolTip(column)
 
-    def feed(self, info):
+        self.feed()
+
+    def feed(self):
         """
-        Populate table with profiles information
-        :param info: profile infomations
+        Populate table with profiler information
         :return: None
         """
         self.clear()
         self.setColumnCount(len(self.COLUMNS_NAME))
+        self.log.info('Profiler length : ' + str(len(self.profiler.list)))
+        self.setRowCount(len(self.profiler.list))
         self.setHorizontalHeaderLabels(self.COLUMNS_NAME)
 
         for itr, column in enumerate(self.COLUMNS_NAME):
             self.horizontalHeaderItem(itr).setToolTip(column)
 
         try:
-            pass
+            self.log.info(self.profiler.list)
+            for itr_r, profile in enumerate(self.profiler.list):
+                self.setRowHeight(itr_r, 18)
+                cell_profile = QTableWidgetItem(str(profile.profile))
+                self.setItem(itr_r, 0, cell_profile)
+                cell_type = QTableWidgetItem(str(profile.type))
+                self.setItem(itr_r, 1, cell_type)
+                cell_host = QTableWidgetItem(str(profile.host))
+                self.setItem(itr_r, 2, cell_host)
+                cell_username = QTableWidgetItem(str(profile.username))
+                self.setItem(itr_r, 3, cell_username)
         except Exception as e:
             self.log.error(e)
 
@@ -62,12 +74,11 @@ class ProfileManager(QDialog):
     """
     Profile Manager Dialog
     """
-    def __init__(self):
-        """
-        class set-up
-        """
+    def __init__(self, profiler):
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
+        self.profiler = profiler
+        self.profileTable = ProfileTable(self.profiler)
 
         self.setWindowFlags(self.windowFlags() & ~ QtCore.Qt.WindowContextHelpButtonHint)
         self.setWindowTitle('Profile Manager')
@@ -84,8 +95,8 @@ class ProfileManager(QDialog):
         frame = QVBoxLayout()
 
         profile_layout = QHBoxLayout()
-        profiler = Profiler()
-        profile_layout.addWidget(profiler, 85)
+
+        profile_layout.addWidget(self.profileTable, 85)
         profile_button_layout = QVBoxLayout()
         add_button = QPushButton('&Add')
         add_button.clicked.connect(self.__addServer)
@@ -116,4 +127,14 @@ class ProfileManager(QDialog):
         :return: None
         """
         self.log.info('Add server')
-
+        try:
+            self.profiler.addProfile(Profile(
+                profile='genome',
+                profile_type='MySQL',
+                host='mysql-eg-publicsql.ebi.ac.uk',
+                port=4157,
+                username='anonymous',
+                password=''
+            ))
+        except Exception as e:
+            self.log.error(e)

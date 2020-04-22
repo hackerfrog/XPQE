@@ -10,18 +10,13 @@ from gui.ProfileManager import ProfileManager
 testPath = ''
 
 
-def open_profile_manager(parent):
+def open_profile_manager(profiler):
     """
     Open Profile Manager dialog
-    :param parent: object of PyQt parent window
+    :param profiler: object of Profiler class
     :return: None
     """
-    profile_manger = ProfileManager()
-    # profile_manager = ProfileManager(parent)
-    # try:
-    #     profile_manager.show()
-    # except Exception as e:
-    #     log.error(e)
+    profile_manger = ProfileManager(profiler)
 
 
 def toggle_check(element, state):

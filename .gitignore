@@ -3,3 +3,4 @@
 *.pyc
 /Tasks.md
 *.log
+*.ini

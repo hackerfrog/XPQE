@@ -14,10 +14,8 @@ from logger import log
 from gui.ProfileManager import ProfileManager
 from modules.CodePainter import CodePainter
 from modules.FileManager import FileManager
+from modules.Profiler import Profiler, Profile
 from modules.trigger_func import *
-
-# Object of FileManger class
-fileManager = FileManager()
 
 
 # All style for syntax highlighter
@@ -37,8 +35,10 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     ############################################################################
-    # ENGINE MANAGER
+    # Modules Init
     engine_manger = EngineManager()
+    fileManager = FileManager()
+    profiler = Profiler()
 
     ############################################################################
     # EDITOR
@@ -157,7 +157,7 @@ if __name__ == '__main__':
     profileMenu = menuBar.addMenu('&Profile')
     # Manage Menu Item
     manageProfileAction = QAction('Manage', window)
-    manageProfileAction.triggered.connect(partial(open_profile_manager, window))
+    manageProfileAction.triggered.connect(partial(open_profile_manager, profiler))
     profileMenu.addAction(manageProfileAction)
 
     viewMenu = menuBar.addMenu('&View')
@@ -181,12 +181,6 @@ if __name__ == '__main__':
 
     window.setCentralWidget(frame)
     window.show()
-
-    ############################################################################
-    # TESTING
-    # mysql = MySQLEngine(host='db4free.net', username='xpqeuser', password='tooruser').connect()
-    #
-    # mysql.close()
 
     ############################################################################
     # END
