@@ -3,10 +3,6 @@ from PyQt5.QtGui import QSyntaxHighlighter
 
 
 class CodePainter(QSyntaxHighlighter):
-    """
-    Add syntax highlighter to editor text
-    :param document: editor content
-    """
     keywords = [
         # A
         'ACTION', 'ADD', 'ALL', 'ALTER', 'ANALYZE', 'AND', 'AS', 'ASC', 'AUTO_INCREMENT',
@@ -74,6 +70,11 @@ class CodePainter(QSyntaxHighlighter):
     braces = [r'\{', r'\}', r'\(', r'\)', r'\[', r'\]']
 
     def __init__(self, document, style):
+        """
+        Add syntax highlighter to editor text
+        :param document: content of editor
+        :param style: syntax highlighter styles
+        """
         QSyntaxHighlighter.__init__(self, document)
 
         rules = []

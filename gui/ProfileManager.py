@@ -10,14 +10,15 @@ from modules.Profiler import Profile
 
 
 class ProfileTable(QTableWidget):
-    """
-    Table of Profile Manager Dialog
-    """
     COLUMNS_NAME = [
         'Profile', 'Engine Type', 'Host', 'Username'
     ]
 
     def __init__(self, profiler):
+        """
+        Table of Profile Manager Dialog
+        :param profiler: object of class Profiler
+        """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
         self.profiler = profiler
@@ -71,10 +72,11 @@ QHeaderView::section {
 
 
 class ProfileManager(QDialog):
-    """
-    Profile Manager Dialog
-    """
     def __init__(self, profiler):
+        """
+        Profile Manager Dialog
+        :param profiler: object of class Profiler
+        """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
         self.profiler = profiler

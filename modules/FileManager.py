@@ -2,12 +2,12 @@ import hashlib
 
 
 class FileManager:
-    """
-    FileManger class keeps track of current file opened in editor
-    :param string: content of editor
-    :param location: path of current file
-    """
     def __init__(self, string='', location=None):
+        """
+        FileManger class keeps track of current file opened in editor
+        :param string: content of editor
+        :param location: path of current file
+        """
         self.hash = None
         self.location = None
         self.reset(string, location)

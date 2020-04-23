@@ -7,12 +7,9 @@ from PyQt5.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
 
 class LineNumberArea(QWidget):
-    """
-    Add line number to given editor
-    """
     def __init__(self, editor):
         """
-        class set-up
+        Add line number to given editor
         :param editor: object of editor
         """
         super().__init__(editor)
@@ -37,12 +34,9 @@ class LineNumberArea(QWidget):
 
 
 class CodeEditor(QPlainTextEdit):
-    """
-    Code Editor
-    """
     def __init__(self):
         """
-        set-up of code editor
+        Code Editor
         """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)

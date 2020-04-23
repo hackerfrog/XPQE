@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import QTableWidget, QMenu, QAction, QTableWidgetItem
 
 
 class ResultTable(QTableWidget):
-    """
-    Table used to display result of executed query
-    """
     def __init__(self):
+        """
+        Table used to display result of executed query
+        """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
 

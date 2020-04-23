@@ -2,12 +2,9 @@ from logger import log
 
 
 class MySQLEngine:
-    """
-    Query Engine of MuSQL database
-    """
     def __init__(self, host=None, port=3306, username=None, password=None):
         """
-        class set-up
+        Query Engine of MuSQL database
         :param host: server host name or ip address
         :param port: server port
         :param username: username for database access
