@@ -4,7 +4,7 @@ from logger import log
 
 
 class MySQLEngine:
-    def __init__(self, profile, result_table):
+    def __init__(self, profile, result_table=None):
         """
         Query Engine of MuSQL database
         :param profile: object of Profile class, contain all information regarding server connection
@@ -19,13 +19,15 @@ class MySQLEngine:
         self.cursor = None     # Cursor
         self.result = None
 
-    def connect(self):
+    def test_connection(self):
         """
-        Build connection with server
-        :return: self
+        Test connection to server
+        :return: dict
         """
         import mysql.connector
         from mysql.connector import Error
+
+        test_info = dict()
 
         try:
             self.con = mysql.connector.connect(
@@ -37,11 +39,22 @@ class MySQLEngine:
             if self.con.is_connected():
                 db_info = self.con.get_server_info()
                 self.log.info('Connect to MySQL server, server version: {}'.format(db_info))
+                test_info['status'] = True
+                test_info['version'] = str(db_info)
                 self.cursor = self.con.cursor(dictionary=True)
                 self.log.info('Cursor is Created')
         except Error as e:
+            test_info['status'] = False
             self.log.error('Error while connecting to MySQL, {}'.format(e))
 
+        return test_info
+
+    def connect(self):
+        """
+        Build connection with server
+        :return: self
+        """
+        self.test_connection()
         return self
 
     def sql(self, query):

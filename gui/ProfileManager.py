@@ -1,10 +1,10 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-
-# Custom Imports
 from qtconsole.qt import QtCore
 
+# Custom Imports
+from Engines.MySQLEngine import MySQLEngine
 from logger import log
 from modules.Profiler import Profile
 
@@ -33,6 +33,7 @@ QHeaderView::section {
     border: 1px solid #DDDDDD;
 }''')
 
+        self.setFocusPolicy(Qt.NoFocus)
         self.setColumnCount(len(self.COLUMNS_NAME))
         self.setHorizontalHeaderLabels(self.COLUMNS_NAME)
 
@@ -72,6 +73,10 @@ QHeaderView::section {
         except Exception as e:
             self.log.error(e)
 
+    def refresh(self):
+        self.clear()
+        self.feed()
+
 
 class ProfileManager(QDialog):
     def __init__(self, profiler):
@@ -103,9 +108,11 @@ class ProfileManager(QDialog):
         profile_layout.addWidget(self.profileTable, 85)
         profile_button_layout = QVBoxLayout()
         add_button = QPushButton('&Add')
-        add_button.clicked.connect(self.__addServer)
+        add_button.clicked.connect(self.__add_server)
         edit_button = QPushButton('&Edit')
+        edit_button.clicked.connect(self.__edit_server)
         remove_button = QPushButton('&Remove')
+        remove_button.clicked.connect(self.__remove_server)
         profile_button_layout.addWidget(add_button, alignment=Qt.AlignTop)
         profile_button_layout.addWidget(edit_button, alignment=Qt.AlignTop)
         profile_button_layout.addWidget(remove_button, alignment=Qt.AlignTop)
@@ -116,6 +123,7 @@ class ProfileManager(QDialog):
         button_layout = QHBoxLayout()
         ok_button = QPushButton('&OK')
         cancel_button = QPushButton('&Cancel')
+        cancel_button.clicked.connect(self.close)
         apply_button = QPushButton('&Apply')
         button_layout.addStretch()
         button_layout.addWidget(ok_button, alignment=Qt.AlignRight)
@@ -125,30 +133,66 @@ class ProfileManager(QDialog):
 
         self.setLayout(frame)
 
-    def __addServer(self):
+    def __add_server(self):
         """
-        Add new profile to Profile Manger
+        Add new profile to profiler
         :return: None
         """
         self.log.info('Add server')
         try:
-            add_profile = AddProfile()
-            # self.profiler.addProfile(Profile(
-            #     profile='genome',
-            #     profile_type='MySQL',
-            #     host='ensembldb.ensembl.org',
-            #     port=5306,
-            #     username='anonymous',
-            #     password=''
-            # ))
+            AddEditProfile(self.profiler)
+            self.profileTable.refresh()
         except Exception as e:
             self.log.error(e)
 
+    def __edit_server(self):
+        """
+        Edit profile properties and save in profiler
+        :return: None
+        """
+        selected = self.profileTable.currentRow()
+        profile = None
+        if selected > -1:
+            profile_name = self.profileTable.item(selected, 0).text()
+            if self.profiler.checkProfileName(profile_name=profile_name):
+                profile = self.profiler.getProfile(profile_name)
+                AddEditProfile(self.profiler, mode='edit', profile=profile)
+                self.profileTable.refresh()
+            else:
+                self.log.error("Profile: {} no longer exists in settings")
+        else:
+            self.log.warn('Please select row before pressing edit button')
 
-class AddProfile(QDialog):
-    def __init__(self):
-        super(AddProfile, self).__init__()
+    def __remove_server(self):
+        """
+        Remove existing server from server profiler
+        :return: None
+        """
+        selected = self.profileTable.currentRow()
+        print(selected)
+        if selected > -1:
+            profile = self.profileTable.item(selected, 0).text()
+            self.profiler.removeProfile(selected)
+            self.profileTable.removeRow(selected)
+            self.log.info('Profile: {} is been removed'.format(profile))
+        else:
+            self.log.warn('Please select row before pressing remove button')
+
+
+class AddEditProfile(QDialog):
+    def __init__(self, profiler, mode='add', profile=None):
+        super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
+        self.profiler = profiler
+        self.mode = mode
+        self.profile = profile
+
+        self.profile_name_input = None
+        self.server_type_combobox = None
+        self.host_input = None
+        self.port_input = None
+        self.username_input = None
+        self.password_input = None
 
         self.setWindowFlags(self.windowFlags() & ~ QtCore.Qt.WindowContextHelpButtonHint)
         self.setWindowTitle('Add New Profile')
@@ -158,4 +202,95 @@ class AddProfile(QDialog):
         self.exec()
 
     def ui(self):
-        pass
+        frame = QVBoxLayout()
+
+        container_layout = QFormLayout()
+        profile_name_label = QLabel("Profile Name")
+        self.profile_name_input = QLineEdit()
+        container_layout.addRow(profile_name_label, self.profile_name_input)
+        server_type_label = QLabel("Server")
+        self.server_type_combobox = QComboBox()
+        self.server_type_combobox.addItem('MySQL')
+        container_layout.addRow(server_type_label, self.server_type_combobox)
+        host_label = QLabel('Host')
+        self.host_input = QLineEdit()
+        container_layout.addRow(host_label, self.host_input)
+        port_label = QLabel('Port')
+        self.port_input = QLineEdit()
+        container_layout.addRow(port_label, self.port_input)
+        username_label = QLabel('Username')
+        self.username_input = QLineEdit()
+        container_layout.addRow(username_label, self.username_input)
+        password_label = QLabel('Password')
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        container_layout.addRow(password_label, self.password_input)
+
+        if self.mode == 'edit':
+            self.profile_name_input.setText(self.profile.profile)
+            # self.server_type_combobox
+            self.host_input.setText(self.profile.host)
+            self.port_input.setText(str(self.profile.port))
+            self.username_input.setText(self.profile.username)
+            self.password_input.setText(self.profile.password)
+
+        button_layout = QHBoxLayout()
+        test_button = QPushButton('&Test Connection')
+        test_button.clicked.connect(self.__test_connection)
+        cancel_button = QPushButton('&Cancel')
+        cancel_button.clicked.connect(self.close)
+        save_button = QPushButton('&Save')
+        save_button.clicked.connect(self.__save_profile)
+        button_layout.addWidget(test_button, alignment=Qt.AlignLeft)
+        button_layout.addStretch()
+        button_layout.addWidget(cancel_button, alignment=Qt.AlignRight)
+        button_layout.addWidget(save_button, alignment=Qt.AlignRight)
+
+        frame.addLayout(container_layout)
+        frame.addStretch()
+        frame.addLayout(button_layout)
+
+        self.setLayout(frame)
+
+    def __test_connection(self):
+        server_type = str(self.server_type_combobox.currentText())
+        profile = Profile(
+            self.profile_name_input.text(),
+            server_type,
+            self.host_input.text(),
+            self.port_input.text(),
+            self.username_input.text(),
+            self.password_input.text()
+        )
+
+        if server_type.lower() == 'mysql':
+            dialog = QMessageBox()
+            engine = MySQLEngine(profile)
+            test_info = engine.test_connection()
+            if test_info['status']:
+                dialog.setIcon(QMessageBox.Information)
+                dialog.setWindowTitle('Success')
+                dialog.setText('Connection successful')
+                dialog.setInformativeText("MySQL " + test_info['version'])
+            else:
+                dialog.setIcon(QMessageBox.Critical)
+                dialog.setWindowTitle('Error')
+                dialog.setText('Unable to connect')
+                dialog.setInformativeText("Please check you detail, it seems something is wrong.")
+
+            dialog.exec_()
+
+    def __save_profile(self):
+        profile = Profile(
+            self.profile_name_input.text(),
+            str(self.server_type_combobox.currentText()),
+            self.host_input.text(),
+            self.port_input.text(),
+            self.username_input.text(),
+            self.password_input.text()
+        )
+        if self.mode == 'add':
+            self.profiler.addProfile(profile)
+        elif self.mode == 'edit':
+            self.profiler.editProfile(self.profile.profile, profile)
+        self.close()

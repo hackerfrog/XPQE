@@ -54,6 +54,14 @@ class Profiler(QSettings):
         else:
             self.log.error("Profile Name already exist")
 
+    def editProfile(self, profile_name, profile):
+        if self.checkProfileName(profile_name=profile_name):
+            index = self.getProfileIndex(profile_name=profile_name)
+            self.list[index] = profile
+            self.setValue('profiler', self.list)
+        else:
+            self.log.error("Given profile/profile_name doesn't exist")
+
     def removeProfile(self, index):
         if index < len(self.list):
             del self.list[index]
@@ -62,6 +70,15 @@ class Profiler(QSettings):
         else:
             self.log.error('Index out of range, Unable to remove profile')
             return False
+
+    def getProfileIndex(self, profile=None, profile_name=None):
+        if profile:
+            return self.list.index(profile)
+        elif profile_name:
+            return [_profile.profile for _profile in self.list].index(profile_name)
+        else:
+            self.log.error("No Profile object or Profile Name is passed to compare")
+            return -1
 
     def checkProfileName(self, profile=None, profile_name=None):
         if profile:
