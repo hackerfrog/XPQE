@@ -1,21 +1,19 @@
+from PyQt5.QtWidgets import QTableWidgetItem
+
 from logger import log
 
 
 class MySQLEngine:
-    def __init__(self, host=None, port=3306, username=None, password=None):
+    def __init__(self, profile, result_table):
         """
         Query Engine of MuSQL database
-        :param host: server host name or ip address
-        :param port: server port
-        :param username: username for database access
-        :param password: password for database access
+        :param profile: object of Profile class, contain all information regarding server connection
+        :param result_table: object of ResultTable class, to populate result into table
         """
         self.log = log.getLogger(self.__class__.__name__)
 
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
+        self.profile = profile
+        self.resultTable = result_table
 
         self.con = None
         self.cursor = None     # Cursor
@@ -31,10 +29,10 @@ class MySQLEngine:
 
         try:
             self.con = mysql.connector.connect(
-                host=self.host,
-                port=self.port,
-                user=self.username,
-                password=self.password
+                host=self.profile.host,
+                port=self.profile.port,
+                user=self.profile.username,
+                password=self.profile.password
             )
             if self.con.is_connected():
                 db_info = self.con.get_server_info()
@@ -52,12 +50,39 @@ class MySQLEngine:
         :param query: MySQL query
         :return: self
         """
+        self.log.info(r'{}'.format(query))
         try:
             self.cursor.execute(query)
             self.result = self.cursor.fetchall()
         except Exception as e:
             self.log.error(e)
+            return None
         return self
+
+    def feed(self):
+        """
+        Populate table with result of executed query
+        """
+        self.resultTable.clear()
+        sample = self.result[0]
+        try:
+            self.resultTable.setColumnCount(len(sample.keys()))
+            self.resultTable.setRowCount(min(1000, len(self.result)))
+            self.resultTable.setHorizontalHeaderLabels(sample.keys())
+            self.resultTable.setSortingEnabled(True)
+
+            for itr, column in enumerate(sample.keys()):
+                self.resultTable.horizontalHeaderItem(itr).setToolTip(column)
+
+            for itr_r, row in enumerate(self.result[:1000] if len(self.result) >= 1000 else self.result):
+                self.resultTable.setRowHeight(itr_r, 18)
+                for itr_c, cell in enumerate(row.items()):
+                    item = QTableWidgetItem(str(cell[1]))
+                    item.setToolTip(str(cell[1]))
+                    self.resultTable.setItem(itr_r, itr_c, item)
+
+        except Exception as e:
+            self.log.error(e)
 
     def close(self):
         """

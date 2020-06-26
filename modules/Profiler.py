@@ -13,7 +13,7 @@ class Profile:
         :param username: server username
         :param password: server password
         """
-        self.profile = profile
+        self.profile = profile.lower()
         self.type = profile_type
         self.host = host
         self.port = port
@@ -37,8 +37,17 @@ class Profiler(QSettings):
 
         self.list = self.value('profiler', [], list)
 
+    def getProfile(self, profile_name):
+        if self.checkProfileName(profile_name=profile_name):
+            for profile in self.list:
+                if profile.profile == profile_name:
+                    return profile
+            return None
+        else:
+            return None
+
     def addProfile(self, profile):
-        if self.__checkProfileName(profile):
+        if not self.checkProfileName(profile=profile):
             self.list.append(profile)
             self.setValue('profiler', self.list)
             self.log.info('New profile added')
@@ -54,8 +63,16 @@ class Profiler(QSettings):
             self.log.error('Index out of range, Unable to remove profile')
             return False
 
-    def __checkProfileName(self, profile):
-        if profile.profile in [profile.profile for profile in self.list]:
-            return False
+    def checkProfileName(self, profile=None, profile_name=None):
+        if profile:
+            profile_name = profile.profile
+        elif profile_name:
+            profile_name = profile_name
         else:
+            self.log.error("No Profile object or Profile Name is passed to compare")
+            return False
+
+        if profile_name in [profile.profile for profile in self.list]:
             return True
+        else:
+            return False

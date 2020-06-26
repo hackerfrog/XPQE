@@ -11,7 +11,7 @@ from modules.Profiler import Profile
 
 class ProfileTable(QTableWidget):
     COLUMNS_NAME = [
-        'Profile', 'Engine Type', 'Host', 'Username'
+        'Profile', 'Engine Type', 'Host', 'Port', 'Username'
     ]
 
     def __init__(self, profiler):
@@ -65,8 +65,10 @@ QHeaderView::section {
                 self.setItem(itr_r, 1, cell_type)
                 cell_host = QTableWidgetItem(str(profile.host))
                 self.setItem(itr_r, 2, cell_host)
+                cell_port = QTableWidgetItem(str(profile.port))
+                self.setItem(itr_r, 3, cell_port)
                 cell_username = QTableWidgetItem(str(profile.username))
-                self.setItem(itr_r, 3, cell_username)
+                self.setItem(itr_r, 4, cell_username)
         except Exception as e:
             self.log.error(e)
 
@@ -130,13 +132,30 @@ class ProfileManager(QDialog):
         """
         self.log.info('Add server')
         try:
-            self.profiler.addProfile(Profile(
-                profile='genome',
-                profile_type='MySQL',
-                host='mysql-eg-publicsql.ebi.ac.uk',
-                port=4157,
-                username='anonymous',
-                password=''
-            ))
+            add_profile = AddProfile()
+            # self.profiler.addProfile(Profile(
+            #     profile='genome',
+            #     profile_type='MySQL',
+            #     host='ensembldb.ensembl.org',
+            #     port=5306,
+            #     username='anonymous',
+            #     password=''
+            # ))
         except Exception as e:
             self.log.error(e)
+
+
+class AddProfile(QDialog):
+    def __init__(self):
+        super(AddProfile, self).__init__()
+        self.log = log.getLogger(self.__class__.__name__)
+
+        self.setWindowFlags(self.windowFlags() & ~ QtCore.Qt.WindowContextHelpButtonHint)
+        self.setWindowTitle('Add New Profile')
+
+        self.ui()
+
+        self.exec()
+
+    def ui(self):
+        pass

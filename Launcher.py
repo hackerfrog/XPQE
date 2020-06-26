@@ -7,14 +7,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 
 # Custom Imports
-from Engines import EngineManager
 from gui.CodeEditor import CodeEditor
+from gui.ProfileManager import ProfileManager
 from gui.ResultTable import ResultTable
 from logger import log
-from gui.ProfileManager import ProfileManager
 from modules.CodePainter import CodePainter
+from modules.EngineManager import EngineManager
 from modules.FileManager import FileManager
-from modules.Profiler import Profiler, Profile
+from modules.Profiler import Profiler
 from modules.trigger_func import *
 
 
@@ -35,19 +35,19 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     ############################################################################
+    # RESULT TABLE
+    result_table = ResultTable()
+
+    ############################################################################
     # Modules Init
-    engine_manger = EngineManager()
-    fileManager = FileManager()
     profiler = Profiler()
+    engine_manger = EngineManager(profiler, result_table)
+    fileManager = FileManager()
 
     ############################################################################
     # EDITOR
     editor = CodeEditor()
     highlight = CodePainter(editor.document(), STYLES)
-
-    ############################################################################
-    # RESULT TABLE
-    result_table = ResultTable()
 
     ############################################################################
     # APP INIT
@@ -174,8 +174,8 @@ if __name__ == '__main__':
 
     layout = QHBoxLayout()
 
-    layout.addWidget(editor, 60)
-    layout.addWidget(result_table, 40)
+    layout.addWidget(editor, 40)
+    layout.addWidget(result_table, 60)
 
     frame.setLayout(layout)
 
