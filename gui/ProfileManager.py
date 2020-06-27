@@ -203,6 +203,7 @@ class AddEditProfile(QDialog):
 
     def ui(self):
         frame = QVBoxLayout()
+        server_type_items = ['MySQL']
 
         container_layout = QFormLayout()
         profile_name_label = QLabel("Profile Name")
@@ -210,7 +211,7 @@ class AddEditProfile(QDialog):
         container_layout.addRow(profile_name_label, self.profile_name_input)
         server_type_label = QLabel("Server")
         self.server_type_combobox = QComboBox()
-        self.server_type_combobox.addItem('MySQL')
+        self.server_type_combobox.addItems(server_type_items)
         container_layout.addRow(server_type_label, self.server_type_combobox)
         host_label = QLabel('Host')
         self.host_input = QLineEdit()
@@ -228,7 +229,7 @@ class AddEditProfile(QDialog):
 
         if self.mode == 'edit':
             self.profile_name_input.setText(self.profile.profile)
-            # self.server_type_combobox
+            self.server_type_combobox.setCurrentIndex(server_type_items.index(self.profile.type))
             self.host_input.setText(self.profile.host)
             self.port_input.setText(str(self.profile.port))
             self.username_input.setText(self.profile.username)
