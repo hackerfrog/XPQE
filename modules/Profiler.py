@@ -21,6 +21,10 @@ class Profile:
         self.password = password
 
     def __repr__(self):
+        """
+        String representation of Profile object
+        :return: String
+        """
         return 'Profile Object: {profile} @ {type}'.format(profile=self.profile, type=self.type)
 
 
@@ -38,6 +42,11 @@ class Profiler(QSettings):
         self.list = self.value('profiler', [], list)
 
     def getProfile(self, profile_name):
+        """
+        Get profile when profile name is passed
+        :param profile_name: name of profile
+        :return: Profile / None
+        """
         if self.checkProfileName(profile_name=profile_name):
             for profile in self.list:
                 if profile.profile == profile_name:
@@ -46,7 +55,19 @@ class Profiler(QSettings):
         else:
             return None
 
+    def save(self):
+        """
+        Hard save all profiles into file
+        :return: None
+        """
+        self.setValue('profiler', self.list)
+
     def addProfile(self, profile):
+        """
+        Add new profile to profiler
+        :param profile: object of Profie which need to added
+        :return: None
+        """
         if not self.checkProfileName(profile=profile):
             self.list.append(profile)
             self.setValue('profiler', self.list)
@@ -55,6 +76,12 @@ class Profiler(QSettings):
             self.log.error("Profile Name already exist")
 
     def editProfile(self, profile_name, profile):
+        """
+        Replace existing profile with given new profile object
+        :param profile_name: name of profile to identify profile which need to replaced by given profile
+        :param profile: Profile object which need to be replaced with existing profile
+        :return: None
+        """
         if self.checkProfileName(profile_name=profile_name):
             index = self.getProfileIndex(profile_name=profile_name)
             self.list[index] = profile
@@ -63,6 +90,11 @@ class Profiler(QSettings):
             self.log.error("Given profile/profile_name doesn't exist")
 
     def removeProfile(self, index):
+        """
+        Remove profile from given profile index
+        :param index: index of profile in profiler
+        :return: Boolean
+        """
         if index < len(self.list):
             del self.list[index]
             self.setValue('profiler', self.list)
@@ -72,6 +104,12 @@ class Profiler(QSettings):
             return False
 
     def getProfileIndex(self, profile=None, profile_name=None):
+        """
+        Get profile index of give profile object or profile name
+        :param profile: object of Profile
+        :param profile_name: name of Profile
+        :return: int
+        """
         if profile:
             return self.list.index(profile)
         elif profile_name:
@@ -81,6 +119,12 @@ class Profiler(QSettings):
             return -1
 
     def checkProfileName(self, profile=None, profile_name=None):
+        """
+        Check given profile or profile with profile name exist in Profiler
+        :param profile: object of Profile
+        :param profile_name: name of profile
+        :return: Boolean
+        """
         if profile:
             profile_name = profile.profile
         elif profile_name:

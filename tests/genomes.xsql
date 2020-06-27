@@ -4,6 +4,6 @@
 
 @genome:desc bos_taurus_core_99_12.xref
 
-show create table bos_taurus_core_99_12.xref
+@genome:show create table bos_taurus_core_99_12.xref
 
-select * from bos_taurus_core_99_12.xref limit 10
+@genome:select * from bos_taurus_core_99_12.xref limit 10

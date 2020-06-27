@@ -98,7 +98,7 @@ class ProfileManager(QDialog):
 
     def ui(self):
         """
-        UI of Profie Manager Dialog
+        UI of Profile Manager Dialog
         :return: None
         """
         frame = QVBoxLayout()
@@ -121,17 +121,24 @@ class ProfileManager(QDialog):
         frame.addLayout(profile_layout)
 
         button_layout = QHBoxLayout()
-        ok_button = QPushButton('&OK')
         cancel_button = QPushButton('&Cancel')
         cancel_button.clicked.connect(self.close)
-        apply_button = QPushButton('&Apply')
+        ok_button = QPushButton('&OK')
+        ok_button.clicked.connect(self.__save_and_close)
         button_layout.addStretch()
-        button_layout.addWidget(ok_button, alignment=Qt.AlignRight)
         button_layout.addWidget(cancel_button, alignment=Qt.AlignRight)
-        button_layout.addWidget(apply_button, alignment=Qt.AlignRight)
+        button_layout.addWidget(ok_button, alignment=Qt.AlignRight)
         frame.addLayout(button_layout)
 
         self.setLayout(frame)
+
+    def __save_and_close(self):
+        """
+        Save profiler and close ProfileManager Dialog
+        :return:
+        """
+        self.profiler.save()
+        self.close()
 
     def __add_server(self):
         """
@@ -181,6 +188,12 @@ class ProfileManager(QDialog):
 
 class AddEditProfile(QDialog):
     def __init__(self, profiler, mode='add', profile=None):
+        """
+        Dialog to Add new or Edit existing server info in profiler
+        :param profiler: object of profiler, keep track of each profile
+        :param mode: determine to open dialog in Add/Edit mode.
+        :param profile: profile which need changes, passed only when mode='edit'
+        """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
         self.profiler = profiler
@@ -202,6 +215,10 @@ class AddEditProfile(QDialog):
         self.exec()
 
     def ui(self):
+        """
+        UI for AddEditDialog
+        :return: None
+        """
         frame = QVBoxLayout()
         server_type_items = ['MySQL']
 
@@ -254,6 +271,10 @@ class AddEditProfile(QDialog):
         self.setLayout(frame)
 
     def __test_connection(self):
+        """
+        Test connectivity to server with give details in AddEditDialog
+        :return: None
+        """
         server_type = str(self.server_type_combobox.currentText())
         profile = Profile(
             self.profile_name_input.text(),
@@ -282,6 +303,10 @@ class AddEditProfile(QDialog):
             dialog.exec_()
 
     def __save_profile(self):
+        """
+        Save give details to profiler.
+        :return: None
+        """
         profile = Profile(
             self.profile_name_input.text(),
             str(self.server_type_combobox.currentText()),

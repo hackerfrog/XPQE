@@ -59,11 +59,22 @@ class EngineManager:
             self.log.error('Invalid query')
 
     def executeEngine(self, profile_name, xsql):
+        """
+        Run given XSQL on respective engine
+        :param profile_name: Name of profile to get engine
+        :param xsql: passed XSQL which need to be executed
+        :return: None
+        """
         engine = self.engines[profile_name]
         if engine.sql(xsql):
             engine.feed()
 
     def createEngine(self, profile):
+        """
+        Create Engine if for given profile is not been created
+        :param profile: object of Profile
+        :return: None
+        """
         profile_type = profile.type
         engine = None
         if profile_type.lower() == 'mysql':

@@ -42,6 +42,7 @@ class CodeEditor(QPlainTextEdit):
         self.log = log.getLogger(self.__class__.__name__)
 
         self.cursorLocation = None
+        self.setUndoRedoEnabled(True)
 
         self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
 

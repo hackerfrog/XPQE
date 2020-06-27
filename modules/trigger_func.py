@@ -1,13 +1,10 @@
-from PyQt5.QtGui import QColor, QTextCharFormat, QFont
+from PyQt5.QtGui import QColor, QTextCharFormat, QFont, QTextCursor
 
 from logger import log
 
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from gui.ProfileManager import ProfileManager
-
-# TODO : below line is only for dev, remove if not needed
-testPath = ''
 
 
 def open_profile_manager(profiler):
@@ -61,7 +58,7 @@ def save_file(editor, file_manager):
         file_manager.set_hash(editor_text)
     else:
         # if location is None then it's a new file
-        save_file_dialog = QFileDialog.getSaveFileName(None, 'Save', '/' + testPath, 'Cross SQL Files (*.xsql)')
+        save_file_dialog = QFileDialog.getSaveFileName(None, 'Save', '/', 'Cross SQL Files (*.xsql)')
 
         if save_file_dialog[0]:
             with open(save_file_dialog[0], 'w') as file:
@@ -114,7 +111,7 @@ def open_file(editor, file_manager):
     :param file_manager: object of FileManger class
     :return: None
     """
-    open_file_dialog = QFileDialog.getOpenFileName(None, 'Open', '/' + testPath)
+    open_file_dialog = QFileDialog.getOpenFileName(None, 'Open', '/')
 
     if open_file_dialog[0]:
         log.info('Opening File @ {}'.format(open_file_dialog[0]))
@@ -136,7 +133,7 @@ def save_as_file(editor, file_manager):
     :param file_manager: object of FileManager class
     :return: None
     """
-    save_as_file_dialog = QFileDialog.getSaveFileName(None, 'Save As', '/' + testPath, 'Cross SQL Files (*.xsql)')
+    save_as_file_dialog = QFileDialog.getSaveFileName(None, 'Save As', '/', 'Cross SQL Files (*.xsql)')
 
     if save_as_file_dialog[0]:
         editor_text = editor.toPlainText()
@@ -149,22 +146,22 @@ def save_as_file(editor, file_manager):
         file_manager.set_location(save_as_file_dialog[0])
 
 
-def undo_text():
+def undo_text(editor):
     """
     Undo feature of editor
+    :param editor: object to editor
     :return: None
     """
-    # TODO: Create Manual UNDO feature
-    log.info('Undo')
+    editor.undo()
 
 
-def redo_text():
+def redo_text(editor):
     """
     Redo feature of editor
+    :param editor: object to editor
     :return: None
     """
-    # TODO: Create Manual REDO feature
-    log.info('Redo')
+    editor.redo()
 
 
 def cut_text():
@@ -194,22 +191,65 @@ def paste_text():
     log.info('Paste')
 
 
-def toggle_line_comment(editor, file_manager):
+def toggle_line_comment(editor):
     """
     Toggle comment on line with current location of editor cursor
     :param editor: object of editor
-    :param file_manager: object og FileManager class
     :return:None
     """
-    # TODO: Create Toggle line comment feature
-    log.info('Toggle Line Comment [Arg: {}, {}]'.format(editor, file_manager))
+    COMMENT_CHARS = '-- '
+
+    cursor = editor.textCursor()
+    # get start and end position of selected text
+    selection_start = cursor.selectionStart()
+    selection_end = cursor.selectionEnd()
+
+    # get block numbers of start and positions
+    cursor.setPosition(selection_start)
+    start_block = cursor.blockNumber()
+    cursor.setPosition(selection_end)
+    end_block = cursor.blockNumber()
+
+    # move cursor to starting of first line
+    cursor.movePosition(QTextCursor.Start)
+    cursor.movePosition(QTextCursor.NextBlock, n=start_block)
+
+    # comment/uncomment each selected line
+    for _ in range(0, end_block - start_block + 1):
+        cursor.movePosition(QTextCursor.StartOfLine)
+        pos1 = cursor.position()
+        cursor.movePosition(QTextCursor.EndOfLine)
+        pos2 = cursor.position()
+
+        # check if current line is empty, then just add comment
+        if pos1 == pos2:
+            cursor.movePosition(QTextCursor.StartOfLine)
+            cursor.insertText(COMMENT_CHARS)
+            cursor.movePosition(QTextCursor.NextBlock)
+            continue
+
+        # select first 3 chars of line
+        cursor.movePosition(QTextCursor.StartOfLine)
+        cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+        cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+        cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor)
+        text = cursor.selectedText()
+        print(text)
+
+        # line is already commented or not
+        if text == COMMENT_CHARS:
+            cursor.removeSelectedText()
+        else:
+            cursor.movePosition(QTextCursor.StartOfLine)
+            cursor.insertText(COMMENT_CHARS)
+        # move to next line block
+        cursor.movePosition(QTextCursor.NextBlock)
 
 
-def run_xsql(editor, result_table, engine_manager):
+def run_xsql(editor, engine_manager):
     """
     Run XSQL query
     :param editor: object of editor
-    :param result_table: object of ResultTable class to populate XSQL result
     :param engine_manager: object of EngineManager class
     :return: None
     """
@@ -220,16 +260,6 @@ def run_xsql(editor, result_table, engine_manager):
     log.info(xsql)
 
     engine_manager.parse(xsql)
-
-    # # TODO: Run process XSQL and then run
-    # mysql = MySQLEngine(
-    #     host='ensembldb.ensembl.org',
-    #     port=5306,
-    #     username='anonymous',
-    #     password='').connect()
-    # mysql.sql(xsql)
-    # result_table.feed(mysql.result)
-    # mysql.close()
 
 
 def fmt(color, style=''):

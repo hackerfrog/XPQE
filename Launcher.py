@@ -59,7 +59,7 @@ if __name__ == '__main__':
     ############################################################################
     # CUSTOM SHORTCUT
     window.runXSQL_sc = QShortcut(QKeySequence('Ctrl+Return'), window)
-    window.runXSQL_sc.activated.connect(partial(run_xsql, editor, result_table, engine_manger))
+    window.runXSQL_sc.activated.connect(partial(run_xsql, editor, engine_manger))
 
     ############################################################################
     # STATUS BAR
@@ -68,7 +68,6 @@ if __name__ == '__main__':
     statusBarLayout = QHBoxLayout()
     statusBarLayout.setSpacing(0)
     statusBarLayout.setContentsMargins(0, 0, 0, 0)
-    # statusBarWidget.setStyleSheet('border:1px solid red;')
     statusFont = QFontDatabase.systemFont(QFontDatabase.FixedFont)
     statusFont.setPointSize(8)
 
@@ -119,12 +118,12 @@ if __name__ == '__main__':
     # Undo Menu Item
     undoEditAction = QAction('&Undo', window)
     undoEditAction.setShortcut('Ctrl+Z')
-    undoEditAction.triggered.connect(undo_text)
+    undoEditAction.triggered.connect(partial(undo_text, editor))
     editMenu.addAction(undoEditAction)
     # Redo Menu Item
     redoEditAction = QAction('&Redo', window)
     redoEditAction.setShortcut('Ctrl+Y')
-    redoEditAction.triggered.connect(redo_text)
+    redoEditAction.triggered.connect(partial(redo_text, editor))
     editMenu.addAction(redoEditAction)
     # Separator
     editMenu.addSeparator()
@@ -151,7 +150,7 @@ if __name__ == '__main__':
     # Toggle Line-Comment Menu Item
     undoEditAction = QAction('&Toggel Line Comment', window)
     undoEditAction.setShortcut('Ctrl+/')
-    undoEditAction.triggered.connect(partial(toggle_line_comment, editor, fileManager))
+    undoEditAction.triggered.connect(partial(toggle_line_comment, editor))
     editMenu.addAction(undoEditAction)
 
     profileMenu = menuBar.addMenu('&Profile')
