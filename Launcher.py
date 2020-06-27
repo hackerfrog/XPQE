@@ -130,20 +130,17 @@ if __name__ == '__main__':
     # Cut Menu Item
     cutEditAction = QAction('&Cut', window)
     cutEditAction.setShortcut('Ctrl+X')
-    cutEditAction.setDisabled(True)
-    cutEditAction.triggered.connect(cut_text)
+    cutEditAction.triggered.connect(partial(cut_text, editor))
     editMenu.addAction(cutEditAction)
     # Copy Menu Item
     copyEditAction = QAction('&Copy', window)
     copyEditAction.setShortcut('Ctrl+C')
-    copyEditAction.setDisabled(True)
-    copyEditAction.triggered.connect(copy_text)
+    copyEditAction.triggered.connect(partial(copy_text, editor))
     editMenu.addAction(copyEditAction)
     # Paste Menu Item
     pasteEditAction = QAction('&Paste', window)
     pasteEditAction.setShortcut('Ctrl+V')
-    pasteEditAction.setDisabled(True)
-    pasteEditAction.triggered.connect(paste_text)
+    pasteEditAction.triggered.connect(partial(paste_text, editor))
     editMenu.addAction(pasteEditAction)
     # Separator
     editMenu.addSeparator()
@@ -173,8 +170,12 @@ if __name__ == '__main__':
 
     layout = QHBoxLayout()
 
-    layout.addWidget(editor, 40)
-    layout.addWidget(result_table, 60)
+    editor_and_result_splitter = QSplitter(Qt.Horizontal)
+    editor_and_result_splitter.addWidget(editor)
+    editor_and_result_splitter.addWidget(result_table)
+    editor_and_result_splitter.setSizes([50, 50])
+
+    layout.addWidget(editor_and_result_splitter)
 
     frame.setLayout(layout)
 

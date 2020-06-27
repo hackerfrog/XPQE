@@ -164,31 +164,31 @@ def redo_text(editor):
     editor.redo()
 
 
-def cut_text():
+def cut_text(editor):
     """
     Cut selected text from an editor
+    :param editor: object to editor
     :return: None
     """
-    # TODO: Create Manual Cut feature
-    log.info('Cut')
+    editor.cut()
 
 
-def copy_text():
+def copy_text(editor):
     """
     Copy selected text from an editor
+    :param editor: object to editor
     :return: None
     """
-    # TODO: Create Manual Copy feature
-    log.info('Copy')
+    editor.copy()
 
 
-def paste_text():
+def paste_text(editor):
     """
-    Paste selected text from an editor
+    Paste text from clipboard to editor
+    :param editor: object to editor
     :return: None
     """
-    # TODO: Create Manual Paste feature
-    log.info('Paste')
+    editor.paste()
 
 
 def toggle_line_comment(editor):

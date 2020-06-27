@@ -1,0 +1,5 @@
+mysql-connector-python>=8.0.20
+PyMySQL>=0.9.3
+qtconsole>=4.7.5
+QtPy>=1.7.0
+PyQt5>=5.15.0
