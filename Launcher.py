@@ -8,9 +8,7 @@ from PyQt5.QtCore import Qt
 
 # Custom Imports
 from gui.CodeEditor import CodeEditor
-from gui.ProfileManager import ProfileManager
 from gui.ResultTable import ResultTable
-from logger import log
 from modules.CodePainter import CodePainter
 from modules.EngineManager import EngineManager
 from modules.FileManager import FileManager

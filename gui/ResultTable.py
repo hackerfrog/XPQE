@@ -1,7 +1,7 @@
 from logger import log
 
 from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtWidgets import QTableWidget, QMenu, QAction, QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidget, QMenu, QAction
 
 
 class ResultTable(QTableWidget):

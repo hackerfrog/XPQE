@@ -1,7 +1,6 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-from qtconsole.qt import QtCore
 
 # Custom Imports
 from Engines.MySQLEngine import MySQLEngine
@@ -89,7 +88,7 @@ class ProfileManager(QDialog):
         self.profiler = profiler
         self.profileTable = ProfileTable(self.profiler)
 
-        self.setWindowFlags(self.windowFlags() & ~ QtCore.Qt.WindowContextHelpButtonHint)
+        self.setWindowFlags(self.windowFlags() & ~ Qt.WindowContextHelpButtonHint)
         self.setWindowTitle('Profile Manager')
 
         self.ui()
@@ -207,7 +206,7 @@ class AddEditProfile(QDialog):
         self.username_input = None
         self.password_input = None
 
-        self.setWindowFlags(self.windowFlags() & ~ QtCore.Qt.WindowContextHelpButtonHint)
+        self.setWindowFlags(self.windowFlags() & ~ Qt.WindowContextHelpButtonHint)
         self.setWindowTitle('Add New Profile')
 
         self.ui()
