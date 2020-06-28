@@ -33,13 +33,18 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     ############################################################################
+    # CONTEXT
+    context = dict()
+    context['server.autocommit'] = False
+
+    ############################################################################
     # RESULT TABLE
     result_table = ResultTable()
 
     ############################################################################
     # Modules Init
     profiler = Profiler()
-    engine_manger = EngineManager(profiler, result_table)
+    engine_manger = EngineManager(context, profiler, result_table)
     fileManager = FileManager()
 
     ############################################################################
@@ -143,10 +148,24 @@ if __name__ == '__main__':
     # Separator
     editMenu.addSeparator()
     # Toggle Line-Comment Menu Item
-    undoEditAction = QAction('&Toggel Line Comment', window)
-    undoEditAction.setShortcut('Ctrl+/')
-    undoEditAction.triggered.connect(partial(toggle_line_comment, editor))
-    editMenu.addAction(undoEditAction)
+    toggleCommentEditAction = QAction('&Toggle Line Comment', window)
+    toggleCommentEditAction.setShortcut('Ctrl+/')
+    toggleCommentEditAction.triggered.connect(partial(toggle_line_comment, editor))
+    editMenu.addAction(toggleCommentEditAction)
+
+    queryMenu = menuBar.addMenu('&Query')
+    # Execute Menu Item
+    executeQueryAction = QAction('&Execute', window)
+    executeQueryAction.triggered.connect(partial(run_xsql, editor, engine_manger))
+    queryMenu.addAction(executeQueryAction)
+    # Separator
+    queryMenu.addSeparator()
+    # Toggle Auto-Commit Menu Item
+    # noinspection PyArgumentList
+    toggleAutoCommitQueryAction = QAction('&Auto Commit', window, checkable=True)
+    toggleAutoCommitQueryAction.setChecked(False)
+    toggleAutoCommitQueryAction.triggered.connect(partial(toggle_auto_commit, context))
+    queryMenu.addAction(toggleAutoCommitQueryAction)
 
     profileMenu = menuBar.addMenu('&Profile')
     # Manage Menu Item

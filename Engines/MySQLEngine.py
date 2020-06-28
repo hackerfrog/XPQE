@@ -4,14 +4,16 @@ from logger import log
 
 
 class MySQLEngine:
-    def __init__(self, profile, result_table=None):
+    def __init__(self, context, profile, result_table=None):
         """
         Query Engine of MuSQL database
+        :param context: shared properties in application
         :param profile: object of Profile class, contain all information regarding server connection
         :param result_table: object of ResultTable class, to populate result into table
         """
         self.log = log.getLogger(self.__class__.__name__)
 
+        self.context = context
         self.profile = profile
         self.resultTable = result_table
 
@@ -36,6 +38,7 @@ class MySQLEngine:
                 user=self.profile.username,
                 password=self.profile.password
             )
+            self.con.autocommit = self.context['server.autocommit']
             if self.con.is_connected():
                 db_info = self.con.get_server_info()
                 self.log.info('Connect to MySQL server, server version: {}'.format(db_info))

@@ -246,6 +246,10 @@ def toggle_line_comment(editor):
         cursor.movePosition(QTextCursor.NextBlock)
 
 
+def toggle_auto_commit(context, state):
+    context['server.autocommit'] = state
+
+
 def run_xsql(editor, engine_manager):
     """
     Run XSQL query
