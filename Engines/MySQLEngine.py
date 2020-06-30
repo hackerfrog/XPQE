@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTableWidgetItem
+from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
 
 from logger import log
 
@@ -60,6 +60,17 @@ class MySQLEngine:
         self.test_connection()
         return self
 
+    def displayError(self, error):
+        """
+        :param error: Exception occurred while running XSQL
+        :return: None
+        """
+        error_dialog = QMessageBox()
+        error_dialog.setIcon(QMessageBox.Critical)
+        error_dialog.setWindowTitle('SQL Error')
+        error_dialog.setText(str(error))
+        error_dialog.exec_()
+
     def sql(self, query):
         """
         Query executor
@@ -72,6 +83,7 @@ class MySQLEngine:
             self.result = self.cursor.fetchall()
         except Exception as e:
             self.log.error(e)
+            self.displayError(e)
             return None
         return self
 
@@ -93,8 +105,10 @@ class MySQLEngine:
             for itr_r, row in enumerate(self.result[:1000] if len(self.result) >= 1000 else self.result):
                 self.resultTable.setRowHeight(itr_r, 18)
                 for itr_c, cell in enumerate(row.items()):
-                    item = QTableWidgetItem(str(cell[1]))
-                    item.setToolTip(str(cell[1]))
+                    cell_value = str('' if cell[1] is None else cell[1])
+                    cell_value_4tooltip = str('NULL' if cell[1] is None else cell[1])
+                    item = QTableWidgetItem(cell_value)
+                    item.setToolTip(cell_value_4tooltip)
                     self.resultTable.setItem(itr_r, itr_c, item)
 
         except Exception as e:

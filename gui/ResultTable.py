@@ -1,7 +1,9 @@
+from functools import partial
+
 from logger import log
 
-from PyQt5.QtGui import QFontDatabase
-from PyQt5.QtWidgets import QTableWidget, QMenu, QAction
+from PyQt5.QtGui import QFontDatabase, QCursor
+from PyQt5.QtWidgets import QTableWidget, QMenu, QAction, QApplication
 
 
 class ResultTable(QTableWidget):
@@ -29,9 +31,32 @@ QHeaderView::section {
         :param event: object of event
         :return: None
         """
-        index = self.indexAt(event.pos())
-        menu = QMenu()
-        copy_text_action = QAction('&Copy Cell', self)
-        # TODO: Copy Event on Cell Right Click
-        copy_text_action.triggered.connect()
-        menu.addAction(copy_text_action)
+        cells = self.selectedItems()
+
+        popMenu = QMenu()
+        copyPopAction = QAction('&Copy')
+        popMenu.addAction(copyPopAction)
+        popMenu.triggered.connect(partial(self.copy_select_cells, cells))
+        popMenu.exec(QCursor.pos())
+        event.accept()
+
+    def copy_select_cells(self, cells):
+        selected_text = ''
+        track = {
+            'row' : -1,
+            'col' : -1
+        }
+        for cell in cells:
+            if track['row'] == -1 or track['col'] == -1:
+                track['row'] = cell.row()
+                track['col'] = cell.column()
+                selected_text += cell.text()
+            else:
+                if track['row'] == cell.row():
+                    track['col'] = cell.column()
+                    selected_text += ',' + cell.text()
+                else:
+                    track['row'] = cell.row()
+                    track['col'] = cell.column()
+                    selected_text += '\n' + cell.text()
+        QApplication.clipboard().setText(selected_text)
