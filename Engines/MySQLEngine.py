@@ -81,6 +81,9 @@ class MySQLEngine:
         try:
             self.cursor.execute(query)
             self.result = self.cursor.fetchall()
+            self.context['xpqe.execute.sql'] = query
+            self.context['xpqe.execute.result'] = self.result
+            self.context['xpqe.execute.server'] = self.profile.type
         except Exception as e:
             self.log.error(e)
             self.displayError(e)

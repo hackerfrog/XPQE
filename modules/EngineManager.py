@@ -25,6 +25,8 @@ class EngineManager:
         """
         xsql = xsql.replace('\u2029', '\n')
 
+        self.context['xpqe.execute.xsql'] = xsql
+
         # Identify profile from given XSQL
         profiles = [profile.lower() for profile in re.findall(r'@.+?:', xsql, re.IGNORECASE)]
         self.log.info('Query profile(s): {}'.format(profiles))
@@ -35,7 +37,6 @@ class EngineManager:
             self.log.error('With current version we only support single profile query')
         elif len(set(profiles)) == 1:
             xsql = xsql.replace(profiles[0], '')
-            print(">:" + xsql + ":<")
             profile_name = (profiles[0][1:-1]).lower()
             try:
                 # Check for engine already exists in self.engines if not create one and add it

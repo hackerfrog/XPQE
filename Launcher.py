@@ -112,6 +112,23 @@ if __name__ == '__main__':
     fileMenu.addAction(saveAsFileAction)
     # Separator
     fileMenu.addSeparator()
+    # Export Sub-Menu
+    exportFileSubMenu = QMenu('&Export', window)
+    fileMenu.addMenu(exportFileSubMenu)
+    # Export As CSV Action
+    csvExportFileAction = QAction('&As CSV')
+    csvExportFileAction.triggered.connect(partial(export_result, context, 'csv', header=True))
+    exportFileSubMenu.addAction(csvExportFileAction)
+    # Export As CSV without header Action
+    csvWoHeaderExportFileAction = QAction('&As CSV w/o Header')
+    csvWoHeaderExportFileAction.triggered.connect(partial(export_result, context, 'csv', header=False))
+    exportFileSubMenu.addAction(csvWoHeaderExportFileAction)
+    # Export As HTML
+    htmlExportFileAction = QAction('&As HTML')
+    htmlExportFileAction.triggered.connect(partial(export_result, context, 'html'))
+    exportFileSubMenu.addAction(htmlExportFileAction)
+    # Separator
+    fileMenu.addSeparator()
     # Exit Menu Item
     exitFileAction = QAction('&Exit', window)
     exitFileAction.triggered.connect(app.quit)

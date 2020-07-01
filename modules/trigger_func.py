@@ -146,6 +146,50 @@ def save_as_file(editor, file_manager):
         file_manager.set_location(save_as_file_dialog[0])
 
 
+def export_result(context, file_type, header=False):
+    content = ''
+
+    if file_type == 'csv':
+        page = list()
+
+        if header:
+            col_names = context['xpqe.execute.result'][0].keys()
+            page.append(','.join(col_names))
+
+        for row in context['xpqe.execute.result']:
+            line = list()
+            for cell in row.items():
+                line.append(str('' if cell[1] is None else cell[1]))
+            page.append(','.join(line))
+        content += '\n'.join(page)
+    elif file_type == 'html':
+        col_names = context['xpqe.execute.result'][0].keys()
+        result_header = '</th><th>'.join(col_names)
+
+        page = list()
+        for row in context['xpqe.execute.result']:
+            line = list()
+            for cell in row.items():
+                line.append(str('' if cell[1] is None else cell[1]))
+            page.append('</td><td>'.join(line))
+        result_body = '</td></tr><tr><td>'.join(page)
+
+        content += '<h2>XSQL</h2><code>{xsql}</code>'.format(xsql=context['xpqe.execute.xsql'])
+        content += '<h2>SQL</h2><code>{sql}</code>'.format(sql=context['xpqe.execute.sql'])
+        content += '<h2>Result</h2><table><tr><th>{header}</th></tr><tr><td>{body}</td></tr></table>'.format(header=result_header, body=result_body)
+
+    file_extension = {
+        'csv': 'Comma Separated Value (*.csv)',
+        'html': 'Hyper Text Markup Language (*.html)'
+    }
+
+    if content.strip() != '':
+        export_file_dialog = QFileDialog.getSaveFileName(None, 'Export', '/', file_extension[file_type])
+        if export_file_dialog[0]:
+            with open(export_file_dialog[0], 'w') as file:
+                file.write(content)
+            log.info('Result Exported @ {}'.format(export_file_dialog[0]))
+
 def undo_text(editor):
     """
     Undo feature of editor
