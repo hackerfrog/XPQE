@@ -5,6 +5,7 @@ from logger import log
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from gui.ProfileManager import ProfileManager
+from gui.AboutDialog import AboutDialog
 
 
 def open_profile_manager(profiler):
@@ -13,7 +14,11 @@ def open_profile_manager(profiler):
     :param profiler: object of Profiler class
     :return: None
     """
-    profile_manger = ProfileManager(profiler)
+    ProfileManager(profiler)
+
+
+def open_about_dialog():
+    AboutDialog()
 
 
 def toggle_check(element, state):
@@ -190,6 +195,7 @@ def export_result(context, file_type, header=False):
                 file.write(content)
             log.info('Result Exported @ {}'.format(export_file_dialog[0]))
 
+
 def undo_text(editor):
     """
     Undo feature of editor
@@ -233,6 +239,16 @@ def paste_text(editor):
     :return: None
     """
     editor.paste()
+
+
+def delete_text(editor):
+    """
+    Delete text from an editor
+    :param editor: object to editor
+    :return: None
+    """
+    cursor = editor.textCursor()
+    cursor.removeSelectedText()
 
 
 def toggle_line_comment(editor):

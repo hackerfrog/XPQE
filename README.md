@@ -4,8 +4,8 @@
 ## Overview
 A single application from which you can connect and execute query from single file on different platform.
 
-## Supported Engines
-|Engine|Status|
+## Supported RDMS
+|RDMS|Status|
 |---|---|
 | `MySQL` | :heavy_check_mark: Available |
 | `PostgreSQL` | :runner: WIP |
@@ -29,7 +29,7 @@ A single application from which you can connect and execute query from single fi
 -- Run query on server profile `profile1`
 @profile1:SELECT * FROM users limit 10
 
--- Run query on server profile `profile1`
+-- Run query on server profile `profile2`
 @profile2:SELECT * FROM users limit 10
 ```
 
