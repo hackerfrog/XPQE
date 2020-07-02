@@ -210,7 +210,7 @@ if __name__ == '__main__':
     # Manage Menu Item
     manageProfileAction = QAction('&Manage', window)
     manageProfileAction.setIcon(QIcon('assets/icons/icon_manage_100.png'))
-    manageProfileAction.triggered.connect(partial(open_profile_manager, profiler))
+    manageProfileAction.triggered.connect(partial(open_profile_manager, context, profiler))
     profileMenu.addAction(manageProfileAction)
 
     viewMenu = menuBar.addMenu('&View')

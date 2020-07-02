@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 from Engines.MySQLEngine import MySQLEngine
 from logger import log
 from modules.Profiler import Profile
-
+import traceback
 
 class ProfileTable(QTableWidget):
     COLUMNS_NAME = [
@@ -78,13 +78,14 @@ QHeaderView::section {
 
 
 class ProfileManager(QDialog):
-    def __init__(self, profiler):
+    def __init__(self, context, profiler):
         """
         Profile Manager Dialog
         :param profiler: object of class Profiler
         """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
+        self.context = context
         self.profiler = profiler
         self.profileTable = ProfileTable(self.profiler)
 
@@ -146,7 +147,7 @@ class ProfileManager(QDialog):
         """
         self.log.info('Add server')
         try:
-            AddEditProfile(self.profiler)
+            AddEditProfile(self.context, self.profiler)
             self.profileTable.refresh()
         except Exception as e:
             self.log.error(e)
@@ -162,7 +163,7 @@ class ProfileManager(QDialog):
             profile_name = self.profileTable.item(selected, 0).text()
             if self.profiler.checkProfileName(profile_name=profile_name):
                 profile = self.profiler.getProfile(profile_name)
-                AddEditProfile(self.profiler, mode='edit', profile=profile)
+                AddEditProfile(self.context, self.profiler, mode='edit', profile=profile)
                 self.profileTable.refresh()
             else:
                 self.log.error("Profile: {} no longer exists in settings")
@@ -186,7 +187,7 @@ class ProfileManager(QDialog):
 
 
 class AddEditProfile(QDialog):
-    def __init__(self, profiler, mode='add', profile=None):
+    def __init__(self, context, profiler, mode='add', profile=None):
         """
         Dialog to Add new or Edit existing server info in profiler
         :param profiler: object of profiler, keep track of each profile
@@ -195,6 +196,7 @@ class AddEditProfile(QDialog):
         """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
+        self.context = context
         self.profiler = profiler
         self.mode = mode
         self.profile = profile
@@ -286,7 +288,7 @@ class AddEditProfile(QDialog):
 
         if server_type.lower() == 'mysql':
             dialog = QMessageBox()
-            engine = MySQLEngine(profile)
+            engine = MySQLEngine(self.context, profile)
             test_info = engine.test_connection()
             if test_info['status']:
                 dialog.setIcon(QMessageBox.Information)

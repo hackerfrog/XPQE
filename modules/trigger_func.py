@@ -8,13 +8,13 @@ from gui.ProfileManager import ProfileManager
 from gui.AboutDialog import AboutDialog
 
 
-def open_profile_manager(profiler):
+def open_profile_manager(context, profiler):
     """
     Open Profile Manager dialog
     :param profiler: object of Profiler class
     :return: None
     """
-    ProfileManager(profiler)
+    ProfileManager(context, profiler)
 
 
 def open_about_dialog():
