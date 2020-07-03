@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 from Engines.MySQLEngine import MySQLEngine
 from logger import log
 from modules.Profiler import Profile
-import traceback
+
 
 class ProfileTable(QTableWidget):
     COLUMNS_NAME = [
@@ -81,6 +81,7 @@ class ProfileManager(QDialog):
     def __init__(self, context, profiler):
         """
         Profile Manager Dialog
+        :param context: shared properties in application
         :param profiler: object of class Profiler
         """
         super().__init__()
@@ -89,6 +90,7 @@ class ProfileManager(QDialog):
         self.profiler = profiler
         self.profileTable = ProfileTable(self.profiler)
 
+        # noinspection PyTypeChecker
         self.setWindowFlags(self.windowFlags() & ~ Qt.WindowContextHelpButtonHint)
         self.setWindowTitle('Profile Manager')
 
@@ -158,7 +160,6 @@ class ProfileManager(QDialog):
         :return: None
         """
         selected = self.profileTable.currentRow()
-        profile = None
         if selected > -1:
             profile_name = self.profileTable.item(selected, 0).text()
             if self.profiler.checkProfileName(profile_name=profile_name):
@@ -166,7 +167,7 @@ class ProfileManager(QDialog):
                 AddEditProfile(self.context, self.profiler, mode='edit', profile=profile)
                 self.profileTable.refresh()
             else:
-                self.log.error("Profile: {} no longer exists in settings")
+                self.log.error("Profile: {} no longer exists in settings".format(profile_name))
         else:
             self.log.warn('Please select row before pressing edit button')
 
@@ -190,6 +191,7 @@ class AddEditProfile(QDialog):
     def __init__(self, context, profiler, mode='add', profile=None):
         """
         Dialog to Add new or Edit existing server info in profiler
+        :param context: shared properties in application
         :param profiler: object of profiler, keep track of each profile
         :param mode: determine to open dialog in Add/Edit mode.
         :param profile: profile which need changes, passed only when mode='edit'
@@ -208,6 +210,7 @@ class AddEditProfile(QDialog):
         self.username_input = None
         self.password_input = None
 
+        # noinspection PyTypeChecker
         self.setWindowFlags(self.windowFlags() & ~ Qt.WindowContextHelpButtonHint)
         self.setWindowTitle('Add New Profile')
 

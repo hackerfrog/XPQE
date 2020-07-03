@@ -6,11 +6,13 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from gui.ProfileManager import ProfileManager
 from gui.AboutDialog import AboutDialog
+from gui.SettingsDialog import SettingsDialog
 
 
 def open_profile_manager(context, profiler):
     """
     Open Profile Manager dialog
+    :param context: shared properties in application
     :param profiler: object of Profiler class
     :return: None
     """
@@ -18,7 +20,20 @@ def open_profile_manager(context, profiler):
 
 
 def open_about_dialog():
+    """
+    Open About dialog
+    :return:None
+    """
     AboutDialog()
+
+
+def open_settings_dialog(context):
+    """
+    Open Settings dialog
+    :param context: shared properties in application
+    :return: None
+    """
+    SettingsDialog(context)
 
 
 def toggle_check(element, state):
@@ -32,15 +47,6 @@ def toggle_check(element, state):
         element.show()
     else:
         element.hide()
-
-
-def copy_cell():
-    """
-    Manual Copy function when Copy Menu Item is click
-    :return: None
-    """
-    # TODO: Create manual copy feature
-    log.info('Copy Cell')
 
 
 def save_file(editor, file_manager):
@@ -158,30 +164,31 @@ def export_result(context, file_type, header=False):
         page = list()
 
         if header:
-            col_names = context['xpqe.execute.result'][0].keys()
+            col_names = context.xpqe['execute.result'][0].keys()
             page.append(','.join(col_names))
 
-        for row in context['xpqe.execute.result']:
+        for row in context.xpqe['execute.result']:
             line = list()
             for cell in row.items():
                 line.append(str('' if cell[1] is None else cell[1]))
             page.append(','.join(line))
         content += '\n'.join(page)
     elif file_type == 'html':
-        col_names = context['xpqe.execute.result'][0].keys()
+        col_names = context.xpqe['execute.result'][0].keys()
         result_header = '</th><th>'.join(col_names)
 
         page = list()
-        for row in context['xpqe.execute.result']:
+        for row in context.xpqe['execute.result']:
             line = list()
             for cell in row.items():
                 line.append(str('' if cell[1] is None else cell[1]))
             page.append('</td><td>'.join(line))
         result_body = '</td></tr><tr><td>'.join(page)
 
-        content += '<h2>XSQL</h2><code>{xsql}</code>'.format(xsql=context['xpqe.execute.xsql'])
-        content += '<h2>SQL</h2><code>{sql}</code>'.format(sql=context['xpqe.execute.sql'])
-        content += '<h2>Result</h2><table><tr><th>{header}</th></tr><tr><td>{body}</td></tr></table>'.format(header=result_header, body=result_body)
+        content += '<h2>XSQL</h2><code>{xsql}</code>'.format(xsql=context.xpqe['execute.xsql'])
+        content += '<h2>SQL</h2><code>{sql}</code>'.format(sql=context.xpqe['execute.sql'])
+        content += '<h2>Result</h2><table><tr><th>{header}</th></tr>' \
+                   '<tr><td>{body}</td></tr></table>'.format(header=result_header, body=result_body)
 
     file_extension = {
         'csv': 'Comma Separated Value (*.csv)',
@@ -307,7 +314,7 @@ def toggle_line_comment(editor):
 
 
 def toggle_auto_commit(context, state):
-    context['server.autocommit'] = state
+    context.server['autoCommit'] = state
 
 
 def run_xsql(editor, engine_manager):

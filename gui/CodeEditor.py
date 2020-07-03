@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QFontDatabase, QColor, QTextFormat, QPainter
+from PyQt5.QtGui import QFontDatabase, QColor, QTextFormat, QPainter, QFont
 
 from logger import log
 
@@ -34,17 +34,25 @@ class LineNumberArea(QWidget):
 
 
 class CodeEditor(QPlainTextEdit):
-    def __init__(self):
+    def __init__(self, context):
         """
         Code Editor
+        :param context: shared properties in application
         """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
 
+        self.context = context
+
         self.cursorLocation = None
         self.setUndoRedoEnabled(True)
 
-        self.setFont(QFontDatabase.systemFont(QFontDatabase.FixedFont))
+        font = QFont()
+        font.setPointSize(self.context.editor['font.pointSize'])
+        font.setFamily(self.context.editor['font.family'])
+        font.setWeight(self.context.editor['font.weight'])
+        font.setStretch(self.context.editor['font.stretch'])
+        self.setFont(font)
 
         self.lineNumberArea = LineNumberArea(self)
 

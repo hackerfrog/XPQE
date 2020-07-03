@@ -25,7 +25,7 @@ class EngineManager:
         """
         xsql = xsql.replace('\u2029', '\n')
 
-        self.context['xpqe.execute.xsql'] = xsql
+        self.context.xpqe['execute.xsql'] = xsql
 
         # Identify profile from given XSQL
         profiles = [profile.lower() for profile in re.findall(r'@.+?:', xsql, re.IGNORECASE)]

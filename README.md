@@ -15,6 +15,7 @@ A single application from which you can connect and execute query from single fi
 |---|---|
 | `Ctrl + Enter` | Run selected query |
 | `Ctrl + /` | Toggle comment |
+| `Ctrl + ,` | Settings |
 
 ## How to setup server profile
 1. Launch Editor

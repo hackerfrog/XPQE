@@ -38,7 +38,7 @@ class MySQLEngine:
                 user=self.profile.username,
                 password=self.profile.password
             )
-            self.con.autocommit = self.context['server.autocommit']
+            self.con.autocommit = self.context.server['autoCommit']
             if self.con.is_connected():
                 db_info = self.con.get_server_info()
                 self.log.info('Connect to MySQL server, server version: {}'.format(db_info))
@@ -63,13 +63,14 @@ class MySQLEngine:
     def displayError(self, error):
         """
         :param error: Exception occurred while running XSQL
-        :return: None
+        :return: self
         """
         error_dialog = QMessageBox()
         error_dialog.setIcon(QMessageBox.Critical)
         error_dialog.setWindowTitle('SQL Error')
         error_dialog.setText(str(error))
         error_dialog.exec_()
+        return self
 
     def sql(self, query):
         """
@@ -81,9 +82,9 @@ class MySQLEngine:
         try:
             self.cursor.execute(query)
             self.result = self.cursor.fetchall()
-            self.context['xpqe.execute.sql'] = query
-            self.context['xpqe.execute.result'] = self.result
-            self.context['xpqe.execute.server'] = self.profile.type
+            self.context.xpqe['execute.sql'] = query
+            self.context.xpqe['execute.result'] = self.result
+            self.context.xpqe['execute.server'] = self.profile.type
         except Exception as e:
             self.log.error(e)
             self.displayError(e)

@@ -4,7 +4,6 @@ from PyQt5.QtCore import *
 
 # Custom Imports
 from logger import log
-import traceback
 
 
 class AboutDialog(QDialog):
@@ -15,8 +14,9 @@ class AboutDialog(QDialog):
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
 
+        # noinspection PyTypeChecker
         self.setWindowFlags(self.windowFlags() & ~ Qt.WindowContextHelpButtonHint)
-        self.setWindowTitle('Profile Manager')
+        self.setWindowTitle('About')
 
         self.ui()
 
@@ -24,7 +24,7 @@ class AboutDialog(QDialog):
 
     def ui(self):
         """
-        UI of Profile Manager Dialog
+        UI of About Dialog
         :return: None
         """
         frame = QVBoxLayout()
@@ -32,7 +32,8 @@ class AboutDialog(QDialog):
         icon8_text = 'App icons by <a target="_blank" href="https://icons8.com">Icons8</a>'
         app_icon = QPixmap(QPixmap('assets/logo.png'))
         app_version_text = '0.1.0-alpha_01'
-        license_text = '<a target="_blank" href="https://github.com/hackerfrog/XPQE/blob/master/LICENSE">GNU General Public License v3.0</a>'
+        license_text = '<a target="_blank" href="https://github.com/hackerfrog/XPQE/blob/master/LICENSE">' \
+                       'GNU General Public License v3.0</a>'
         github_text = '<a target="_blank" href="https://github.com/hackerfrog/XPQE">GitHub</a>'
 
         logo_name_layout = QHBoxLayout()

@@ -43,8 +43,8 @@ QHeaderView::section {
     def copy_select_cells(self, cells):
         selected_text = ''
         track = {
-            'row' : -1,
-            'col' : -1
+            'row': -1,
+            'col': -1
         }
         for cell in cells:
             if track['row'] == -1 or track['col'] == -1:
@@ -60,3 +60,4 @@ QHeaderView::section {
                     track['col'] = cell.column()
                     selected_text += '\n' + cell.text()
         QApplication.clipboard().setText(selected_text)
+        return self
