@@ -308,7 +308,7 @@ class AddEditProfile(QDialog):
 
     def __save_profile(self):
         """
-        Save give details to profiler.
+        Save given details to profiler.
         :return: None
         """
         profile = Profile(

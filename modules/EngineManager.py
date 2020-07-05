@@ -8,7 +8,9 @@ class EngineManager:
     def __init__(self, context, profiler, result_table):
         """
         Engine Identifier
+        :param context: shared properties in application
         :param profiler: object of Profiler class
+        :param result_table: object of ResultTable class
         """
         self.log = log.getLogger(self.__class__.__name__)
         self.context = context

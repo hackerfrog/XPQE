@@ -65,7 +65,10 @@ class CodePainter(QSyntaxHighlighter):
         'ZEROFILL',
     ]
 
-    operators = []
+    operators = [
+        '+', '-', '*', '/', '%',
+        '<', '>', '=', '!=', '>=', '<=', '!<', '!>', '<>'
+    ]
 
     braces = [r'\{', r'\}', r'\(', r'\)', r'\[', r'\]']
 
@@ -81,21 +84,21 @@ class CodePainter(QSyntaxHighlighter):
 
         # Keyword, operator and brace rules
         rules += [(r'\b%s\b' % w, 0, style['keyword']) for w in CodePainter.keywords]
-        # rules += [ (r'%s' % o, 0, style['operator']) for w in CodePainter.operators ]
+        rules += [(r'%s' % o, 0, style['operator']) for o in CodePainter.operators]
         rules += [(r'%s' % b, 0, style['brace']) for b in CodePainter.braces]
 
         # Other rules
         rules += [
+            # Numeric values
+            (r'\b[+-]?[0-9]+[lL]?\b', 0, style['numbers']),
+            (r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b', 0, style['numbers']),
+            (r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b', 0, style['numbers']),
             # Double-Quote String
             (r'"[^"\\]*(\\.[^"\\]*)*"', 0, style['string']),
             # Single-Quote String
             (r"'[^'\\]*(\\.[^'\\]*)*'", 0, style['string']),
             # Single line Comment
             (r'\-\- [^\n]*', 0, style['comment']),
-            # Numeric values
-            (r'\b[+-]?[0-9]+[lL]?\b', 0, style['numbers']),
-            (r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b', 0, style['numbers']),
-            (r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b', 0, style['numbers']),
         ]
 
         self.rules = [(QRegExp(pattern, cs=Qt.CaseInsensitive), index, fmt) for (pattern, index, fmt) in rules]
@@ -103,8 +106,8 @@ class CodePainter(QSyntaxHighlighter):
     def highlightBlock(self, text):
         """
         This functions paints all colors on editor text according to rules
-        :param text:
-        :return:
+        :param text: object of QTextBlock class
+        :return: None
         """
         for exp, nth, fmt in self.rules:
             index = exp.indexIn(text, 0)

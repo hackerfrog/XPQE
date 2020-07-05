@@ -94,6 +94,7 @@ class MySQLEngine:
     def feed(self):
         """
         Populate table with result of executed query
+        :return: None
         """
         self.resultTable.clear()
         sample = self.result[0]

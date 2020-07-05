@@ -21,7 +21,7 @@ from gui.Main import Main
 # All style for syntax highlighter
 STYLES = {
     'keyword': fmt('blue'),
-    'operator': fmt('red'),
+    'operator': fmt('red', 'bold'),
     'brace': fmt('brown'),
     'string': fmt('magenta'),
     'comment': fmt('darkGreen', 'italic'),
@@ -53,8 +53,11 @@ if __name__ == '__main__':
     editor = CodeEditor(context)
     highlight = CodePainter(editor.document(), STYLES)
 
-    window = Main(context,  app, editor, engine_manager, file_manager, profiler, result_table)
-    window.show()
+    window = Main(context, app, editor, engine_manager, file_manager, profiler, result_table)
+    if context.window['maximized']:
+        window.showMaximized()
+    else:
+        window.show()
 
     ############################################################################
     # END

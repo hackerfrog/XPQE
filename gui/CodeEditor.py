@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QFontDatabase, QColor, QTextFormat, QPainter, QFont
+from PyQt5.QtGui import QColor, QTextFormat, QPainter, QFont
 
 from logger import log
 
@@ -131,17 +131,6 @@ class CodeEditor(QPlainTextEdit):
         if rect.contains(self.viewport().rect()):
             self.updateLineNumberAreaWidth(0)
 
-    def resizeEvent(self, event):
-        """
-        Update line number area on resize event of editor
-        :param event: object of event
-        :return: None
-        """
-        super().resizeEvent(event)
-
-        cr = self.contentsRect()
-        self.lineNumberArea.setGeometry(QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
-
     def lineNumberAreaPaintEvent(self, event):
         """
         Paint line number on editor event on editor
@@ -169,3 +158,43 @@ class CodeEditor(QPlainTextEdit):
             top = bottom
             bottom = top + self.blockBoundingRect(block).height()
             block_number += 1
+
+    def resizeEvent(self, event):
+        """
+        Update line number area on resize event of editor
+        :param event: object of event
+        :return: None
+        """
+        super().resizeEvent(event)
+
+        cr = self.contentsRect()
+        self.lineNumberArea.setGeometry(QRect(cr.left(), cr.top(), self.lineNumberAreaWidth(), cr.height()))
+
+    def keyReleaseEvent(self, event):
+        """
+        Event function called when any key is released
+        :param event: object of QKeyEvent class
+        :return: None
+        """
+        auto_close_brackets = {
+            '(': ')',
+            '{': '}',
+            '[': ']',
+        }
+        auto_close_quotes = {
+            '"': '"',
+            '\'': '\'',
+        }
+        if event.text() in list(auto_close_brackets.keys()) + list(auto_close_quotes.keys()):
+            cursor = self.textCursor()
+
+            if event.text() in auto_close_brackets.keys()\
+                    and self.context.editor['autoClosing.brackets'].lower() == 'always':
+                cursor.insertText(auto_close_brackets[event.text()])
+                cursor.movePosition(cursor.Left, cursor.MoveAnchor)
+            elif event.text() in auto_close_quotes.keys()\
+                    and self.context.editor['autoClosing.quotes'].lower() == 'always':
+                cursor.insertText(auto_close_quotes[event.text()])
+                cursor.movePosition(cursor.Left, cursor.MoveAnchor)
+
+            self.setTextCursor(cursor)

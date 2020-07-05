@@ -27,13 +27,14 @@ def open_about_dialog():
     AboutDialog()
 
 
-def open_settings_dialog(context):
+def open_settings_dialog(context, editor):
     """
     Open Settings dialog
     :param context: shared properties in application
+    :param editor: object of CodeEditor class
     :return: None
     """
-    SettingsDialog(context)
+    SettingsDialog(context, editor)
 
 
 def toggle_check(element, state):

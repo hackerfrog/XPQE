@@ -12,6 +12,15 @@ from modules.trigger_func import *
 
 class Main(QMainWindow):
     def __init__(self, context,  app, editor, engine_manager, file_manager, profiler, result_table):
+        """
+        :param context: shared properties in application
+        :param app: object of QApplication
+        :param editor: object of CodeEditor class
+        :param engine_manager: object of EngineManager class
+        :param file_manager: object of FileManger class
+        :param profiler: object of Profiler class
+        :param result_table: object of ResultTable class
+        """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
 
@@ -59,6 +68,10 @@ class Main(QMainWindow):
         self.setCentralWidget(frame)
 
     def ui_status_bar(self):
+        """
+        UI elements of Status Bar
+        :return:
+        """
         self.status_bar = self.statusBar()
         statusBarWidget = QWidget()
         statusBarLayout = QHBoxLayout()
@@ -77,6 +90,10 @@ class Main(QMainWindow):
         self.setStatusBar(self.status_bar)
 
     def ui_menu_bar(self):
+        """
+        UI elements of Menu Bar
+        :return:
+        """
         menuBar = self.menuBar()
 
         fileMenu = menuBar.addMenu('&File')
@@ -112,7 +129,7 @@ class Main(QMainWindow):
         settingsFileAction = QAction('&Settings', self)
         settingsFileAction.setIcon(QIcon('assets/icons/icon_settings_100.png'))
         settingsFileAction.setShortcut('Ctrl+,')
-        settingsFileAction.triggered.connect(partial(open_settings_dialog, self.context))
+        settingsFileAction.triggered.connect(partial(open_settings_dialog, self.context, self.editor))
         fileMenu.addAction(settingsFileAction)
         # Separator
         fileMenu.addSeparator()
@@ -229,13 +246,29 @@ class Main(QMainWindow):
         helpMenu.addAction(aboutHelpAction)
 
     def resizeEvent(self, event):
+        """
+        Event function called when window is resized
+        :param event: object of QEvent class
+        :return: None
+        """
         size = self.size()
         self.context.window['size'] = [size.width(), size.height()]
 
     def moveEvent(self, event):
+        """
+        Event function called when window position is changed
+        :param event: object of QEvent class
+        :return: None
+        """
         position = self.pos()
         self.context.window['position'] = [position.x(), position.y()]
 
     def closeEvent(self, event):
+        """
+        Event function called just before closing Application/Window
+        :param event: object of QEvent class
+        :return: None
+        """
+        self.context.editor['maximized'] = self.isMaximized()
         self.context.editor['editorToResultRatio'] = self.editor_and_result_splitter.sizes()
         self.context.saveSettings()

@@ -22,6 +22,8 @@ class Context:
 
     def loadSettings(self):
         # EDITOR
+        self.editor['autoClosing.brackets'] = self.settings.value('editor.autoClosing.brackets', 'Always', str)
+        self.editor['autoClosing.quotes'] = self.settings.value('editor.autoClosing.quotes', 'Always', str)
         self.editor['editorToResultRatio'] = self.settings.value('editor.editorToResultRatio', [50, 50], int)
         self.editor['font.family'] = self.settings.value('editor.font.family', 'Courier New', str)
         self.editor['font.pointSize'] = self.settings.value('editor.font.pointSize', 9, int)
@@ -32,6 +34,7 @@ class Context:
         self.server['autoCommit'] = self.settings.value('server.autoCommit', False, bool)
 
         # WINDOW
+        self.window['maximized'] = self.settings.value('window.maximized', False, bool)
         self.window['position'] = self.settings.value('window.position', [0, 0], int)
         self.window['size'] = self.settings.value('window.size', [480, 320], int)
 
@@ -43,6 +46,8 @@ class Context:
 
     def saveSettings(self):
         # EDITOR
+        self.settings.setValue('editor.autoClosing.brackets', self.editor['autoClosing.brackets'])
+        self.settings.setValue('editor.autoClosing.quotes', self.editor['autoClosing.quotes'])
         self.settings.setValue('editor.editorToResultRatio', self.editor['editorToResultRatio'])
         self.settings.setValue('editor.font.family', self.editor['font.family'])
         self.settings.setValue('editor.font.pointSize', self.editor['font.pointSize'])
@@ -53,5 +58,6 @@ class Context:
         self.settings.setValue('server.autoCommit', self.server['autoCommit'])
 
         # WINDOW
+        self.settings.setValue('window.maximized', self.window['maximized'])
         self.settings.setValue('window.position', self.window['position'])
         self.settings.setValue('window.size', self.window['size'])

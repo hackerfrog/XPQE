@@ -28,7 +28,7 @@ QHeaderView::section {
     def contextMenuEvent(self, event):
         """
         Event handler for table content area
-        :param event: object of event
+        :param event: object of QEvent class
         :return: None
         """
         cells = self.selectedItems()
@@ -36,11 +36,16 @@ QHeaderView::section {
         popMenu = QMenu()
         copyPopAction = QAction('&Copy')
         popMenu.addAction(copyPopAction)
-        popMenu.triggered.connect(partial(self.copy_select_cells, cells))
+        popMenu.triggered.connect(partial(self.__copy_select_cells, cells))
         popMenu.exec(QCursor.pos())
         event.accept()
 
-    def copy_select_cells(self, cells):
+    def __copy_select_cells(self, cells):
+        """
+        Copy data of selected cells into clipboard in CSV format
+        :param cells: List of all selected cells of result table
+        :return:
+        """
         selected_text = ''
         track = {
             'row': -1,
