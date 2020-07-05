@@ -97,17 +97,18 @@ class MySQLEngine:
         :return: None
         """
         self.resultTable.clear()
+        self.resultTable.maxRenderRecords = self.context.editor['result.renderCount']
         sample = self.result[0]
         try:
             self.resultTable.setColumnCount(len(sample.keys()))
-            self.resultTable.setRowCount(min(1000, len(self.result)))
+            self.resultTable.setRowCount(min(self.resultTable.maxRenderRecords, len(self.result)))
             self.resultTable.setHorizontalHeaderLabels(sample.keys())
             self.resultTable.setSortingEnabled(True)
 
             for itr, column in enumerate(sample.keys()):
                 self.resultTable.horizontalHeaderItem(itr).setToolTip(column)
 
-            for itr_r, row in enumerate(self.result[:1000] if len(self.result) >= 1000 else self.result):
+            for itr_r, row in enumerate(self.result[:1000] if len(self.result) >= self.resultTable.maxRenderRecords else self.result):
                 self.resultTable.setRowHeight(itr_r, 18)
                 for itr_c, cell in enumerate(row.items()):
                     cell_value = str('' if cell[1] is None else cell[1])
@@ -115,6 +116,11 @@ class MySQLEngine:
                     item = QTableWidgetItem(cell_value)
                     item.setToolTip(cell_value_4tooltip)
                     self.resultTable.setItem(itr_r, itr_c, item)
+
+            self.resultTable.resultCount.setText('Showing {:,} of {:,} records'.format(
+                self.resultTable.maxRenderRecords if self.cursor.rowcount > self.resultTable.maxRenderRecords else self.cursor.rowcount,
+                self.cursor.rowcount
+            ))
 
         except Exception as e:
             self.log.error(e)

@@ -29,6 +29,7 @@ class Context:
         self.editor['font.pointSize'] = self.settings.value('editor.font.pointSize', 9, int)
         self.editor['font.stretch'] = self.settings.value('editor.font.stretch', 0, int)
         self.editor['font.weight'] = self.settings.value('editor.font.weight', 50, int)
+        self.editor['result.renderCount'] = self.settings.value('editor.result.renderCount', 1000, int)
 
         # SERVER
         self.server['autoCommit'] = self.settings.value('server.autoCommit', False, bool)
@@ -53,6 +54,7 @@ class Context:
         self.settings.setValue('editor.font.pointSize', self.editor['font.pointSize'])
         self.settings.setValue('editor.font.stretch', self.editor['font.stretch'])
         self.settings.setValue('editor.font.weight', self.editor['font.weight'])
+        self.settings.setValue('editor.result.renderCount', self.editor['result.renderCount'])
 
         # SERVER
         self.settings.setValue('server.autoCommit', self.server['autoCommit'])

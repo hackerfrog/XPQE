@@ -36,7 +36,7 @@ A single application from which you can connect and execute query from single fi
 
 ## LICENSE
 
-  Copyright © 2020 Lovepreet Singh
+  Copyright (C) 2007 Free Software Foundation
 
   This program is free software; you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software

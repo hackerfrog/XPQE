@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     ############################################################################
     # RESULT TABLE
-    result_table = ResultTable()
+    result_table = ResultTable(context)
 
     ############################################################################
     # Modules Init

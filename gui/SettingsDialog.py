@@ -50,6 +50,7 @@ class SettingsDialog(QDialog):
         self.auto_close_quotes_types = [
             'Always', 'Never'
         ]
+        self.result_render_count_input = None
 
         # noinspection PyTypeChecker
         self.setWindowFlags(self.windowFlags() & ~ Qt.WindowContextHelpButtonHint)
@@ -121,6 +122,18 @@ class SettingsDialog(QDialog):
         auto_close_layout.addRow(auto_close_quotes_label, self.auto_close_quotes_input)
         auto_close_group.setLayout(auto_close_layout)
         editor_layout.addWidget(auto_close_group)
+        # Result Group
+        result_group = QGroupBox('Result')
+        result_layout = QFormLayout()
+        result_render_count_label = QLabel('Max records render')
+        self.result_render_count_input = QSpinBox()
+        self.result_render_count_input.setMinimum(10)
+        self.result_render_count_input.setMaximum(100000)
+        self.result_render_count_input.setValue(self.context.editor['result.renderCount'])
+        result_layout.addRow(result_render_count_label, self.result_render_count_input)
+        result_group.setLayout(result_layout)
+        editor_layout.addWidget(result_group)
+        editor_layout.addStretch()
         editor_tab.setLayout(editor_layout)
         self.tab_widget.addTab(editor_tab, 'Editor')
 
@@ -128,6 +141,7 @@ class SettingsDialog(QDialog):
         export_tab = QWidget()
         export_layout = QVBoxLayout()
         export_layout.addWidget(QLabel('Export Body'))
+        export_layout.addStretch()
         export_tab.setLayout(export_layout)
         self.tab_widget.addTab(export_tab, 'Export')
         frame.addWidget(self.tab_widget)
@@ -149,7 +163,7 @@ class SettingsDialog(QDialog):
 
     def __apply_settings(self):
         """
-        Save all settings
+        Save all settings to context
         :return:
         """
         current_tab = self.tab_widget.tabText(self.tab_widget.currentIndex())
@@ -160,11 +174,17 @@ class SettingsDialog(QDialog):
             self.context.editor['font.family'] = self.font_family_temp_select
             self.context.editor['font.weight'] = self.font_weight_types[self.font_weight_input.currentIndex()]
             self.context.editor['font.stretch'] = self.font_stretch_types[self.font_stretch_input.currentIndex()]
+            self.context.editor['result.renderCount'] = self.result_render_count_input.value()
             self.__save_settings(terminate=False)
         elif current_tab.lower() == 'export':
             print('Exp')
 
     def __save_settings(self, terminate=True):
+        """
+        Make changes live on app window
+        :param terminate: True to close settings dialog on call else False
+        :return: None
+        """
         font = QFont()
         font.setPointSize(self.context.editor['font.pointSize'])
         font.setFamily(self.context.editor['font.family'])
@@ -175,4 +195,9 @@ class SettingsDialog(QDialog):
             self.close()
 
     def __font_change(self, font):
+        """
+        Event function on change of font selection
+        :param font: object of QFont passed by event function
+        :return: None
+        """
         self.font_family_temp_select = font.family()

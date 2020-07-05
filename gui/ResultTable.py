@@ -7,12 +7,17 @@ from PyQt5.QtWidgets import QTableWidget, QMenu, QAction, QApplication
 
 
 class ResultTable(QTableWidget):
-    def __init__(self):
+    def __init__(self, context):
         """
         Table used to display result of executed query
         """
         super().__init__()
         self.log = log.getLogger(self.__class__.__name__)
+
+        self.context = context
+
+        self.maxRenderRecords = self.context.editor['result.renderCount']
+        self.resultCount = None
 
         # Set Font Style and Size
         table_font = QFontDatabase.systemFont(QFontDatabase.FixedFont)
@@ -24,21 +29,6 @@ QHeaderView::section {
     background-color: #EEEEEE;
     border: 1px solid #DDDDDD;
 }''')
-
-    def contextMenuEvent(self, event):
-        """
-        Event handler for table content area
-        :param event: object of QEvent class
-        :return: None
-        """
-        cells = self.selectedItems()
-
-        popMenu = QMenu()
-        copyPopAction = QAction('&Copy')
-        popMenu.addAction(copyPopAction)
-        popMenu.triggered.connect(partial(self.__copy_select_cells, cells))
-        popMenu.exec(QCursor.pos())
-        event.accept()
 
     def __copy_select_cells(self, cells):
         """
@@ -66,3 +56,18 @@ QHeaderView::section {
                     selected_text += '\n' + cell.text()
         QApplication.clipboard().setText(selected_text)
         return self
+
+    def contextMenuEvent(self, event):
+        """
+        Event handler for table content area
+        :param event: object of QEvent class
+        :return: None
+        """
+        cells = self.selectedItems()
+
+        popMenu = QMenu()
+        copyPopAction = QAction('&Copy')
+        popMenu.addAction(copyPopAction)
+        popMenu.triggered.connect(partial(self.__copy_select_cells, cells))
+        popMenu.exec(QCursor.pos())
+        event.accept()
