@@ -21,6 +21,10 @@ class Context:
         self.loadSettings()
 
     def loadSettings(self):
+        """
+        Fetch all settings into application
+        :return: None
+        """
         # EDITOR
         self.editor['autoClosing.brackets'] = self.settings.value('editor.autoClosing.brackets', 'Always', str)
         self.editor['autoClosing.quotes'] = self.settings.value('editor.autoClosing.quotes', 'Always', str)
@@ -40,12 +44,18 @@ class Context:
         self.window['size'] = self.settings.value('window.size', [480, 320], int)
 
         # XPQE
+        self.xpqe['execute.host'] = None
         self.xpqe['execute.result'] = None
         self.xpqe['execute.server'] = None
         self.xpqe['execute.sql'] = None
+        self.xpqe['execute.timestamp'] = None
         self.xpqe['execute.xsql'] = None
 
     def saveSettings(self):
+        """
+        Save settings properties
+        :return: None
+        """
         # EDITOR
         self.settings.setValue('editor.autoClosing.brackets', self.editor['autoClosing.brackets'])
         self.settings.setValue('editor.autoClosing.quotes', self.editor['autoClosing.quotes'])

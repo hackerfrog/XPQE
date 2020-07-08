@@ -34,7 +34,7 @@ QHeaderView::section {
         """
         Copy data of selected cells into clipboard in CSV format
         :param cells: List of all selected cells of result table
-        :return:
+        :return: self
         """
         selected_text = ''
         track = {

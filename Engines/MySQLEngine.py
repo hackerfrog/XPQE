@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
 
 from logger import log
 
+from datetime import datetime
+
 
 class MySQLEngine:
     def __init__(self, context, profile, result_table=None):
@@ -85,6 +87,8 @@ class MySQLEngine:
             self.context.xpqe['execute.sql'] = query
             self.context.xpqe['execute.result'] = self.result
             self.context.xpqe['execute.server'] = self.profile.type
+            self.context.xpqe['execute.host'] = self.profile.host
+            self.context.xpqe['execute.timestamp'] = str(datetime.fromtimestamp(datetime.now().timestamp()).isoformat())
         except Exception as e:
             self.log.error(e)
             self.displayError(e)

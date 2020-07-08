@@ -157,6 +157,11 @@ class Main(QMainWindow):
         htmlExportFileAction.setIcon(QIcon('assets/icons/icon_html_100.png'))
         htmlExportFileAction.triggered.connect(partial(export_result, self.context, 'html'))
         exportFileSubMenu.addAction(htmlExportFileAction)
+        # Export As PDF
+        pdfExportFileAction = QAction('&As PDF', self)
+        pdfExportFileAction.setIcon(QIcon('assets/icons/icon_pdf_100.png'))
+        pdfExportFileAction.triggered.connect(partial(export_result, self.context, 'pdf'))
+        exportFileSubMenu.addAction(pdfExportFileAction)
         # Separator
         fileMenu.addSeparator()
         # Exit Menu Item

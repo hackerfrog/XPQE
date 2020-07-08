@@ -164,7 +164,7 @@ class SettingsDialog(QDialog):
     def __apply_settings(self):
         """
         Save all settings to context
-        :return:
+        :return: None
         """
         current_tab = self.tab_widget.tabText(self.tab_widget.currentIndex())
         if current_tab.lower() == 'editor':

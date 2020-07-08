@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from gui.ProfileManager import ProfileManager
 from gui.AboutDialog import AboutDialog
 from gui.SettingsDialog import SettingsDialog
+from modules.PdfMaker import PdfMaker
 
 
 def open_profile_manager(context, profiler):
@@ -159,7 +160,15 @@ def save_as_file(editor, file_manager):
 
 
 def export_result(context, file_type, header=False):
+    """
+    Export result table into give file format
+    :param context: shared properties in application
+    :param file_type: format of export file
+    :param header: export file with header (True/False)
+    :return: None
+    """
     content = ''
+    pdf_maker = None
 
     if file_type == 'csv':
         page = list()
@@ -186,21 +195,28 @@ def export_result(context, file_type, header=False):
             page.append('</td><td>'.join(line))
         result_body = '</td></tr><tr><td>'.join(page)
 
-        content += '<h2>XSQL</h2><code>{xsql}</code>'.format(xsql=context.xpqe['execute.xsql'])
-        content += '<h2>SQL</h2><code>{sql}</code>'.format(sql=context.xpqe['execute.sql'])
-        content += '<h2>Result</h2><table><tr><th>{header}</th></tr>' \
+        content += '<h2>XSQL Query</h2><code>{xsql}</code>'.format(xsql=context.xpqe['execute.xsql'])
+        content += '<h2>SQL Query</h2><code>{sql}</code>'.format(sql=context.xpqe['execute.sql'])
+        content += '<h2>Result Table</h2><table><tr><th>{header}</th></tr>' \
                    '<tr><td>{body}</td></tr></table>'.format(header=result_header, body=result_body)
+    elif file_type == 'pdf':
+        content = 'pdf_maker'
+        pdf_maker = PdfMaker(context)
 
     file_extension = {
         'csv': 'Comma Separated Value (*.csv)',
-        'html': 'Hyper Text Markup Language (*.html)'
+        'html': 'Hyper Text Markup Language (*.html)',
+        'pdf': 'Portable Document Format (*.pdf)'
     }
 
     if content.strip() != '':
         export_file_dialog = QFileDialog.getSaveFileName(None, 'Export', '/', file_extension[file_type])
         if export_file_dialog[0]:
-            with open(export_file_dialog[0], 'w') as file:
-                file.write(content)
+            if file_type == 'pdf':
+                pdf_maker.generate_pdf(export_file_dialog[0])
+            else:
+                with open(export_file_dialog[0], 'w') as file:
+                    file.write(content)
             log.info('Result Exported @ {}'.format(export_file_dialog[0]))
 
 

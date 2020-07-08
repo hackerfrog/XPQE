@@ -8,6 +8,7 @@ class Profile:
         """
         Keeps all information of server
         :param profile: name of profile
+        :param profile_type: type of server ex: MySQL
         :param host: server host name
         :param port: server port number
         :param username: server username

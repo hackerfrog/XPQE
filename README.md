@@ -34,6 +34,12 @@ A single application from which you can connect and execute query from single fi
 @profile2:SELECT * FROM users limit 10
 ```
 
+## Dependency
+### Export PDF
+`Export PDF` required `MikTeX` to generate pdf file.
+1. Goto [https://miktex.org/download](https://miktex.org/download)
+2. Download and Install as per your system requirements
+
 ## LICENSE
 
   Copyright (C) 2007 Free Software Foundation
