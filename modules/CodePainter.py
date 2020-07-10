@@ -5,58 +5,61 @@ from PyQt5.QtGui import QSyntaxHighlighter
 class CodePainter(QSyntaxHighlighter):
     keywords = [
         # A
-        'ACTION', 'ADD', 'ALL', 'ALTER', 'ANALYZE', 'AND', 'AS', 'ASC', 'AUTO_INCREMENT',
+        'ACTION', 'ADD', 'ALL', 'ALTER', 'ANALYSE', 'ANALYZE', 'AND', 'ANY', 'ARRAY', 'AS', 'ASC', 'ASYMMETRIC',
+        'AUTO_INCREMENT',
         # B
         'BDB', 'BERKELEYDB', 'BETWEEN', 'BIGINT', 'BINARY', 'BIT', 'BLOB', 'BOTH', 'BTREE', 'BY',
         # C
-        'CASCADE', 'CASE', 'CHANGE', 'CHAR', 'CHARACTER', 'CHECK', 'COLLATE', 'COLUMN', 'COLUMNS', 'CONSTRAINT',
-        'CREATE', 'CROSS', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+        'CASCADE', 'CASE', 'CAST', 'CHANGE', 'CHAR', 'CHARACTER', 'CHECK', 'COLLATE', 'COLUMN', 'COLUMNS', 'CONSTRAINT',
+        'CREATE', 'CROSS', 'CURRENT_CATALOG', 'CURRENT_DATE', 'CURRENT_ROLE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+        'CURRENT_USER',
         # D
-        'DATABASE', 'DATABASES', 'DATE', 'DAY_HOUR', 'DAY_MINUTE', 'DAY_SECOND', 'DEC', 'DECIMAL', 'DEFAULT', 'DELAYED',
-        'DELETE', 'DESC', 'DESCRIBE', 'DISTINCT', 'DISTINCTROW', 'DIV', 'DOUBLE', 'DROP',
+        'DATABASE', 'DATABASES', 'DATE', 'DAY_HOUR', 'DAY_MINUTE', 'DAY_SECOND', 'DEC', 'DECIMAL', 'DEFAULT',
+        'DEFERRABLE', 'DELAYED', 'DELETE', 'DESC', 'DESCRIBE', 'DISTINCT', 'DISTINCTROW', 'DIV', 'DO', 'DOUBLE', 'DROP',
         # E
-        'ELSE', 'ENCLOSED', 'ENUM', 'ERRORS', 'ESCAPED', 'EXISTS', 'EXPLAIN',
+        'ELSE', 'ENCLOSED', 'END', 'ENUM', 'ERRORS', 'ESCAPED', 'EXCEPT', 'EXISTS', 'EXPLAIN',
         # F
-        'FALSE', 'FIELDS', 'FLOAT', 'FOR', 'FORCE', 'FOREIGN', 'FROM', 'FULLTEXT', 'FUNCTION',
+        'FALSE', 'FETCH', 'FIELDS', 'FLOAT', 'FOR', 'FORCE', 'FOREIGN', 'FROM', 'FULLTEXT', 'FUNCTION',
         # G
         'GEOMETRY', 'GRANT', 'GROUP',
         # H
         'HASH', 'HAVING', 'HELP', 'HIGH_PRIORITY', 'HOUR_MINUTE', 'HOUR_SECOND',
         # I
-        'IF', 'IGNORE', 'IN', 'INDEX', 'INFILE', 'INNER', 'INNODB', 'INSERT', 'INT', 'INTEGER', 'INTERVAL', 'INTO',
-        'IS',
+        'IF', 'IGNORE', 'ILIKE', 'IN', 'INDEX', 'INFILE', 'INITIALLY', 'INNER', 'INNODB', 'INSERT', 'INT', 'INTEGER',
+        'INTERSECT', 'INTERVAL', 'INTO', 'IS', 'ISNULL',
         # J
         'JOIN',
         # K
         'KEY', 'KEYS', 'KILL',
         # L
-        'LEADING', 'LEFT', 'LIKE', 'LIMIT', 'LINES', 'LOAD', 'LOCALTIME', 'LOCALTIMESTAMP', 'LOCK', 'LONG', 'LONGBLOB',
-        'LONGTEXT', 'LOW_PRIORITY',
+        'LATERAL', 'LEADING', 'LEFT', 'LIKE', 'LIMIT', 'LINES', 'LOAD', 'LOCALTIME', 'LOCALTIMESTAMP', 'LOCK', 'LONG',
+        'LONGBLOB', 'LONGTEXT', 'LOW_PRIORITY',
         # M
         'MASTER_SERVER_ID', 'MATCH', 'MEDIUMBLOB', 'MEDIUMINT', 'MEDIUMTEXT', 'MIDDLEINT', 'MINUTE_SECOND', 'MOD',
         'MRG_MYISAM',
         # N
-        'NATURAL', 'NO', 'NOT', 'NULL', 'NUMERIC',
+        'NATURAL', 'NEW', 'NO', 'NOT', 'NULL', 'NUMERIC',
         # O
-        'ON', 'OPTIMIZE', 'OPTION', 'OPTIONALLY', 'OR', 'ORDER', 'OUTER', 'OUTFILE',
+        'OFF', 'OFFSET', 'OLD', 'ON', 'ONLY', 'OPTIMIZE', 'OPTION', 'OPTIONALLY', 'OR', 'ORDER', 'OUTER', 'OUTFILE',
+        'OVERLAPS',
         # P
-        'PRECISION', 'PRIMARY', 'PRIVILEGES', 'PROCEDURE', 'PURGE',
+        'PLACING', 'PRECISION', 'PRIMARY', 'PRIVILEGES', 'PROCEDURE', 'PURGE',
         # Q
         # R
-        'READ', 'REAL', 'REFERENCES', 'REGEXP', 'RENAME', 'REPLACE', 'REQUIRE', 'RESTRICT', 'RETURNS', 'REVOKE',
-        'RIGHT', 'RLIKE', 'RTREE',
+        'READ', 'REAL', 'REFERENCES', 'REGEXP', 'RENAME', 'REPLACE', 'REQUIRE', 'RESTRICT', 'RETURNING', 'RETURNS',
+        'REVOKE', 'RIGHT', 'RLIKE', 'RTREE',
         # S
-        'SELECT', 'SET', 'SHOW', 'SMALLINT', 'SOME', 'SONAME', 'SPATIAL', 'SQL_BIG_RESULT', 'SQL_CALC_FOUND_ROWS',
-        'SQL_SMALL_RESULT', 'SSL', 'STARTING', 'STRAIGHT_JOIN', 'STRIPED',
+        'SELECT', 'SESSION_USER', 'SET', 'SHOW', 'SIMILAR', 'SMALLINT', 'SOME', 'SONAME', 'SPATIAL', 'SQL_BIG_RESULT',
+        'SQL_CALC_FOUND_ROWS', 'SQL_SMALL_RESULT', 'SSL', 'STARTING', 'STRAIGHT_JOIN', 'STRIPED', 'SYMMETRIC',
         # T
         'TABLE', 'TABLES', 'TERMINATED', 'TEXT', 'THEN', 'TIME', 'TIMESTAMP', 'TINYBLOB', 'TINYINT', 'TINYTEXT', 'TO',
         'TRAILING', 'TRUE', 'TYPES',
         # U
-        'UNION', 'UNIQUE', 'UNLOCK', 'UNSIGNED', 'UPDATE', 'USAGE', 'USE', 'USER_RESOURCES', 'USING',
+        'UNION', 'UNIQUE', 'UNLOCK', 'UNSIGNED', 'UPDATE', 'USAGE', 'USE', 'USER', 'USER_RESOURCES', 'USING',
         # V
-        'VALUES', 'VARBINARY', 'VARCHAR', 'VARCHARACTER', 'VARYING',
+        'VALUES', 'VARBINARY', 'VARCHAR', 'VARCHARACTER', 'VARIADIC', 'VARYING', 'VERBOSE',
         # W
-        'WARNINGS', 'WHEN', 'WHERE', 'WITH', 'WRITE',
+        'WARNINGS', 'WHEN', 'WHERE', 'WINDOW', 'WITH', 'WRITE',
         # X
         'XOR',
         # Y
@@ -66,8 +69,7 @@ class CodePainter(QSyntaxHighlighter):
     ]
 
     operators = [
-        '+', '-', '*', '/', '%',
-        '<', '>', '=', '!=', '>=', '<=', '!<', '!>', '<>'
+        '+', '-', '*', '/', '%', '<', '>', '=', '!=', '>=', '<=', '!<', '!>', '<>', '!!=', '!~', r'\|\|'
     ]
 
     braces = [r'\{', r'\}', r'\(', r'\)', r'\[', r'\]']
