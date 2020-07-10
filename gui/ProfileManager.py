@@ -4,9 +4,9 @@ from PyQt5.QtCore import *
 
 # Custom Imports
 from Engines.MySQLEngine import MySQLEngine
+from Engines.PostgreSQLEngine import PostgreSQLEngine
 from logger import log
 from modules.Profiler import Profile
-
 
 class ProfileTable(QTableWidget):
     COLUMNS_NAME = [
@@ -204,9 +204,11 @@ class AddEditProfile(QDialog):
         self.profile = profile
 
         self.profile_name_input = None
+        self.server_type_items = ['MySQL', 'PostgreSQL']
         self.server_type_combobox = None
         self.host_input = None
         self.port_input = None
+        self.database_input = None
         self.username_input = None
         self.password_input = None
 
@@ -224,7 +226,6 @@ class AddEditProfile(QDialog):
         :return: None
         """
         frame = QVBoxLayout()
-        server_type_items = ['MySQL']
 
         container_layout = QFormLayout()
         profile_name_label = QLabel("Profile Name")
@@ -232,14 +233,19 @@ class AddEditProfile(QDialog):
         container_layout.addRow(profile_name_label, self.profile_name_input)
         server_type_label = QLabel("Server")
         self.server_type_combobox = QComboBox()
-        self.server_type_combobox.addItems(server_type_items)
+        self.server_type_combobox.addItems(self.server_type_items)
+        self.server_type_combobox.currentIndexChanged.connect(self.__server_type_change)
         container_layout.addRow(server_type_label, self.server_type_combobox)
         host_label = QLabel('Host')
         self.host_input = QLineEdit()
         container_layout.addRow(host_label, self.host_input)
         port_label = QLabel('Port')
         self.port_input = QLineEdit()
+        self.port_input.setText('3306')
         container_layout.addRow(port_label, self.port_input)
+        default_db_label = QLabel('Database')
+        self.database_input = QLineEdit()
+        container_layout.addRow(default_db_label, self.database_input)
         username_label = QLabel('Username')
         self.username_input = QLineEdit()
         container_layout.addRow(username_label, self.username_input)
@@ -249,12 +255,17 @@ class AddEditProfile(QDialog):
         container_layout.addRow(password_label, self.password_input)
 
         if self.mode == 'edit':
-            self.profile_name_input.setText(self.profile.profile)
-            self.server_type_combobox.setCurrentIndex(server_type_items.index(self.profile.type))
-            self.host_input.setText(self.profile.host)
-            self.port_input.setText(str(self.profile.port))
-            self.username_input.setText(self.profile.username)
-            self.password_input.setText(self.profile.password)
+            try:
+                print(self.profile)
+                self.profile_name_input.setText(self.profile.profile)
+                self.server_type_combobox.setCurrentIndex(self.server_type_items.index(self.profile.type))
+                self.host_input.setText(self.profile.host)
+                self.port_input.setText(str(self.profile.port))
+                self.database_input.setText(self.profile.database if self.profile.database else '')
+                self.username_input.setText(self.profile.username)
+                self.password_input.setText(self.profile.password)
+            except Exception as e:
+                print(e)
 
         button_layout = QHBoxLayout()
         test_button = QPushButton('&Test Connection')
@@ -279,18 +290,19 @@ class AddEditProfile(QDialog):
         Test connectivity to server with give details in AddEditDialog
         :return: None
         """
-        server_type = str(self.server_type_combobox.currentText())
+        server_type = str(self.server_type_combobox.currentText()).lower()
         profile = Profile(
             self.profile_name_input.text(),
             server_type,
-            self.host_input.text(),
-            self.port_input.text(),
-            self.username_input.text(),
-            self.password_input.text()
+            host=self.host_input.text(),
+            port=self.port_input.text(),
+            database=self.database_input.text(),
+            username=self.username_input.text(),
+            password=self.password_input.text()
         )
 
-        if server_type.lower() == 'mysql':
-            dialog = QMessageBox()
+        dialog = QMessageBox()
+        if server_type == 'mysql':
             engine = MySQLEngine(self.context, profile)
             test_info = engine.test_connection()
             if test_info['status']:
@@ -303,8 +315,21 @@ class AddEditProfile(QDialog):
                 dialog.setWindowTitle('Error')
                 dialog.setText('Unable to connect')
                 dialog.setInformativeText("Please check you detail, it seems something is wrong.")
-
-            dialog.exec_()
+        elif server_type == 'postgresql':
+            dialog = QMessageBox()
+            engine = PostgreSQLEngine(self.context, profile)
+            test_info = engine.test_connection()
+            if test_info['status']:
+                dialog.setIcon(QMessageBox.Information)
+                dialog.setWindowTitle('Success')
+                dialog.setText('Connection successful')
+                dialog.setInformativeText("PostgreSQL " + str(test_info['version']))
+            else:
+                dialog.setIcon(QMessageBox.Critical)
+                dialog.setWindowTitle('Error')
+                dialog.setText('Unable to connect')
+                dialog.setInformativeText("Please check you detail, it seems something is wrong.")
+        dialog.exec_()
 
     def __save_profile(self):
         """
@@ -314,13 +339,29 @@ class AddEditProfile(QDialog):
         profile = Profile(
             self.profile_name_input.text(),
             str(self.server_type_combobox.currentText()),
-            self.host_input.text(),
-            self.port_input.text(),
-            self.username_input.text(),
-            self.password_input.text()
+            host=self.host_input.text(),
+            port=self.port_input.text(),
+            database=self.database_input.text(),
+            username=self.username_input.text(),
+            password=self.password_input.text()
         )
         if self.mode == 'add':
             self.profiler.addProfile(profile)
         elif self.mode == 'edit':
             self.profiler.editProfile(self.profile.profile, profile)
         self.close()
+
+    def __server_type_change(self, index):
+        """
+        Change other elements properties on event
+        :param index: index of QComboBox selected item
+        :return: None
+        """
+        server_type = str(self.server_type_combobox.itemText(index)).lower()
+        if server_type == 'mysql':
+            self.port_input.setText('3306')
+        elif server_type == 'postgresql':
+            self.port_input.setText('5432')
+            self.database_input.setText(
+                'postgres' if self.database_input.text() == '' else self.database_input.text()
+            )
