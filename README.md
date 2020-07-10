@@ -8,7 +8,9 @@ A single application from which you can connect and execute query from single fi
 |RDMS|Status|
 |---|---|
 | `MySQL` | :heavy_check_mark: Available |
-| `PostgreSQL` | :runner: WIP |
+| `PostgreSQL` | :heavy_check_mark: Available |
+| `MariaDB` | :runner: WIP |
+| `MS SQL Server` | :data: Planned |
 
 ## Shortcuts
 |Shortcut|Detail|

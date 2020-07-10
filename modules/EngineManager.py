@@ -1,6 +1,7 @@
 import re
 
 from Engines.MySQLEngine import MySQLEngine
+from Engines.PostgreSQLEngine import PostgreSQLEngine
 from logger import log
 
 
@@ -82,6 +83,10 @@ class EngineManager:
         if profile_type.lower() == 'mysql':
             engine = MySQLEngine(self.context, profile, self.resultTable)
             engine.connect()
+        elif profile_type.lower() == 'postgresql':
+            engine = PostgreSQLEngine(self.context, profile, self.resultTable)
+            engine.connect()
+
         # Add to engines list
         if engine:
             self.engines[profile.profile] = engine

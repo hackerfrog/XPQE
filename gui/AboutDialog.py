@@ -31,7 +31,7 @@ class AboutDialog(QDialog):
 
         icon8_text = 'App icons by <a target="_blank" href="https://icons8.com">Icons8</a>'
         app_icon = QPixmap(QPixmap('assets/logo.png'))
-        app_version_text = '0.1.0-alpha_01'
+        app_version_text = '0.2.0-alpha_1'
         license_text = '<a target="_blank" href="https://github.com/hackerfrog/XPQE/blob/master/LICENSE">' \
                        'GNU General Public License v3.0</a>'
         github_text = '<a target="_blank" href="https://github.com/hackerfrog/XPQE">GitHub</a>'

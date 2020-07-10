@@ -1,14 +1,15 @@
 from PyQt5.QtWidgets import QTableWidgetItem, QMessageBox
+import psycopg2
 
 from logger import log
 
 from datetime import datetime
 
 
-class MySQLEngine:
+class PostgreSQLEngine:
     def __init__(self, context, profile, result_table=None):
         """
-        Query Engine of MySQL database
+        Query Engine of PostgreSQL database
         :param context: shared properties in application
         :param profile: object of Profile class, contain all information regarding server connection
         :param result_table: object of ResultTable class, to populate result into table
@@ -28,13 +29,12 @@ class MySQLEngine:
         Test connection to server
         :return: dict
         """
-        import mysql.connector
-        from mysql.connector import Error
+        import psycopg2
 
         test_info = dict()
 
         try:
-            self.con = mysql.connector.connect(
+            self.con = psycopg2.connect(
                 host=self.profile.host,
                 port=self.profile.port,
                 database=self.profile.database,
@@ -42,16 +42,15 @@ class MySQLEngine:
                 password=self.profile.password
             )
             self.con.autocommit = self.context.server['autoCommit']
-            if self.con.is_connected():
-                db_info = self.con.get_server_info()
-                self.log.info('Connect to MySQL server, server version: {}'.format(db_info))
-                test_info['status'] = True
-                test_info['version'] = str(db_info)
-                self.cursor = self.con.cursor(dictionary=True)
-                self.log.info('Cursor is Created')
-        except Error as e:
+            self.log.info('Connect to PostgreSQL server, server version: {}'.format(self.con.server_version))
+            test_info['status'] = True
+            test_info['version'] = self.con.server_version
+            self.cursor = self.con.cursor()
+            self.log.info('Cursor is Created')
+
+        except psycopg2.Error as e:
             test_info['status'] = False
-            self.log.error('Error while connecting to MySQL, {}'.format(e))
+            self.log.error('Error while connecting to PostgreSQL, {}'.format(e))
 
         return test_info
 
@@ -78,7 +77,7 @@ class MySQLEngine:
     def sql(self, query):
         """
         Query executor
-        :param query: MySQL query
+        :param query: PostgreSQL query
         :return: self
         """
         self.log.info(r'{}'.format(query))
@@ -90,7 +89,7 @@ class MySQLEngine:
             self.context.xpqe['execute.server'] = self.profile.type
             self.context.xpqe['execute.host'] = self.profile.host
             self.context.xpqe['execute.timestamp'] = str(datetime.fromtimestamp(datetime.now().timestamp()).isoformat())
-        except Exception as e:
+        except psycopg2.Error as e:
             self.log.error(e)
             self.displayError(e)
             return None
@@ -103,22 +102,22 @@ class MySQLEngine:
         """
         self.resultTable.clear()
         self.resultTable.maxRenderRecords = self.context.editor['result.renderCount']
-        sample = self.result[0]
+        column_names = [col[0] for col in self.cursor.description]
         try:
-            self.resultTable.setColumnCount(len(sample.keys()))
+            self.resultTable.setColumnCount(len(self.cursor.description))
             self.resultTable.setRowCount(min(self.resultTable.maxRenderRecords, len(self.result)))
-            self.resultTable.setHorizontalHeaderLabels(sample.keys())
+            self.resultTable.setHorizontalHeaderLabels(column_names)
             self.resultTable.setSortingEnabled(True)
 
-            for itr, column in enumerate(sample.keys()):
+            for itr, column in enumerate(column_names):
                 self.resultTable.horizontalHeaderItem(itr).setToolTip(column)
 
             for itr_r, row in enumerate(self.result[:self.resultTable.maxRenderRecords]
                                         if len(self.result) >= self.resultTable.maxRenderRecords else self.result):
                 self.resultTable.setRowHeight(itr_r, 18)
-                for itr_c, cell in enumerate(row.items()):
-                    cell_value = str('' if cell[1] is None else cell[1])
-                    cell_value_4tooltip = str('NULL' if cell[1] is None else cell[1])
+                for itr_c, cell in enumerate(row):
+                    cell_value = str('' if cell is None else cell)
+                    cell_value_4tooltip = str('NULL' if cell is None else cell)
                     item = QTableWidgetItem(cell_value)
                     item.setToolTip(cell_value_4tooltip)
                     self.resultTable.setItem(itr_r, itr_c, item)
@@ -127,19 +126,14 @@ class MySQLEngine:
                 self.resultTable.maxRenderRecords if self.cursor.rowcount > self.resultTable.maxRenderRecords else self.cursor.rowcount,
                 self.cursor.rowcount
             ))
-
         except Exception as e:
             self.log.error(e)
 
     def close(self):
         """
-        Close MySQL connection
+        Close PostgreSQL connection
         :return: True if connection is closed else False
         """
-        if self.con.is_connected():
-            if self.cursor:
-                self.cursor.close()
-            self.con.close()
-            self.log.info('MySQL connection is closed')
-            return True
-        return False
+        self.cursor.close()
+        self.log.info('PostgreSQL connection is closed')
+        return self.cursor.closed

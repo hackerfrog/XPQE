@@ -4,13 +4,14 @@ from logger import log
 
 
 class Profile:
-    def __init__(self, profile, profile_type, host=None, port=None, username=None, password=None):
+    def __init__(self, profile, profile_type, host=None, port=None, database=None, username=None, password=None):
         """
         Keeps all information of server
         :param profile: name of profile
         :param profile_type: type of server ex: MySQL
         :param host: server host name
         :param port: server port number
+        :param database: database name in server
         :param username: server username
         :param password: server password
         """
@@ -18,6 +19,7 @@ class Profile:
         self.type = profile_type
         self.host = host
         self.port = port
+        self.database = database
         self.username = username
         self.password = password
 
