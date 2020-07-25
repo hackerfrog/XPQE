@@ -86,7 +86,8 @@ class MySQLEngine:
             self.cursor.execute(query)
             self.result = self.cursor.fetchall()
             self.context.xpqe['execute.sql'] = query
-            self.context.xpqe['execute.result'] = self.result
+            self.context.xpqe['execute.header'] = self.result[0].keys()
+            self.context.xpqe['execute.result'] = [tuple([cell[1] for cell in row.items()]) for row in self.result]
             self.context.xpqe['execute.server'] = self.profile.type
             self.context.xpqe['execute.host'] = self.profile.host
             self.context.xpqe['execute.timestamp'] = str(datetime.fromtimestamp(datetime.now().timestamp()).isoformat())
@@ -103,14 +104,13 @@ class MySQLEngine:
         """
         self.resultTable.clear()
         self.resultTable.maxRenderRecords = self.context.editor['result.renderCount']
-        sample = self.result[0]
         try:
-            self.resultTable.setColumnCount(len(sample.keys()))
+            self.resultTable.setColumnCount(len(self.context.xpqe['execute.header']))
             self.resultTable.setRowCount(min(self.resultTable.maxRenderRecords, len(self.result)))
-            self.resultTable.setHorizontalHeaderLabels(sample.keys())
+            self.resultTable.setHorizontalHeaderLabels(self.context.xpqe['execute.header'])
             self.resultTable.setSortingEnabled(True)
 
-            for itr, column in enumerate(sample.keys()):
+            for itr, column in enumerate(self.context.xpqe['execute.header']):
                 self.resultTable.horizontalHeaderItem(itr).setToolTip(column)
 
             for itr_r, row in enumerate(self.result[:self.resultTable.maxRenderRecords]

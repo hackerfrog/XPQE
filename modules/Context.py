@@ -45,6 +45,7 @@ class Context:
 
         # XPQE
         self.xpqe['execute.host'] = None
+        self.xpqe['execute.header'] = None
         self.xpqe['execute.result'] = None
         self.xpqe['execute.server'] = None
         self.xpqe['execute.sql'] = None

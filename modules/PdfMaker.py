@@ -46,16 +46,16 @@ class PdfMaker:
         with self.document.create(Section('SQL Query')) as xsql:
             xsql.append(Command('texttt', self.context.xpqe['execute.sql']))
 
-        col_names = self.context.xpqe['execute.result'][0].keys()
+        col_names = self.context.xpqe['execute.header']
 
         with self.document.create(Section('Result Table')) as result:
             with result.create(LongTabu('|' + '|'.join(['X'] * len(col_names)) + '|')) as table:
                 table.add_hline()
                 table.add_row(col_names, mapper=[bold])
                 for row in self.context.xpqe['execute.result']:
-                    cells = row.items()
+                    # cells = row.items()
                     table.add_hline()
-                    table.add_row(['' if cell[1] is None else cell[1] for cell in cells])
+                    table.add_row(['' if cell is None else cell for cell in row])
                 table.add_hline()
 
     def generate_pdf(self, file_path):

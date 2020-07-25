@@ -174,24 +174,24 @@ def export_result(context, file_type, header=False):
         page = list()
 
         if header:
-            col_names = context.xpqe['execute.result'][0].keys()
+            col_names = context.xpqe['execute.header']
             page.append(','.join(col_names))
 
         for row in context.xpqe['execute.result']:
             line = list()
-            for cell in row.items():
-                line.append(str('' if cell[1] is None else cell[1]))
+            for cell in row:
+                line.append(str('' if cell is None else cell))
             page.append(','.join(line))
         content += '\n'.join(page)
     elif file_type == 'html':
-        col_names = context.xpqe['execute.result'][0].keys()
+        col_names = context.xpqe['execute.header']
         result_header = '</th><th>'.join(col_names)
 
         page = list()
         for row in context.xpqe['execute.result']:
             line = list()
-            for cell in row.items():
-                line.append(str('' if cell[1] is None else cell[1]))
+            for cell in row:
+                line.append(str('' if cell is None else cell))
             page.append('</td><td>'.join(line))
         result_body = '</td></tr><tr><td>'.join(page)
 

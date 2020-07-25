@@ -85,6 +85,7 @@ class PostgreSQLEngine:
             self.cursor.execute(query)
             self.result = self.cursor.fetchall()
             self.context.xpqe['execute.sql'] = query
+            self.context.xpqe['execute.header'] = [col[0] for col in self.cursor.description]
             self.context.xpqe['execute.result'] = self.result
             self.context.xpqe['execute.server'] = self.profile.type
             self.context.xpqe['execute.host'] = self.profile.host
@@ -102,14 +103,13 @@ class PostgreSQLEngine:
         """
         self.resultTable.clear()
         self.resultTable.maxRenderRecords = self.context.editor['result.renderCount']
-        column_names = [col[0] for col in self.cursor.description]
         try:
             self.resultTable.setColumnCount(len(self.cursor.description))
             self.resultTable.setRowCount(min(self.resultTable.maxRenderRecords, len(self.result)))
-            self.resultTable.setHorizontalHeaderLabels(column_names)
+            self.resultTable.setHorizontalHeaderLabels(self.context.xpqe['execute.header'])
             self.resultTable.setSortingEnabled(True)
 
-            for itr, column in enumerate(column_names):
+            for itr, column in enumerate(self.context.xpqe['execute.header']):
                 self.resultTable.horizontalHeaderItem(itr).setToolTip(column)
 
             for itr_r, row in enumerate(self.result[:self.resultTable.maxRenderRecords]
